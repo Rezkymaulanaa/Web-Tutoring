@@ -1,0 +1,85 @@
+@extends('dashboard/layouts/main')
+
+@section('container')
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2 ms-4 ">Tambah User</h1>
+    </div>
+
+    <div class="container">
+        <form action="{{ route('store') }}" method="post">
+            @csrf
+
+            <div class="flex-column">
+                <label for="nama">Nama Lengkap </label>
+            </div>
+            <div class="input-group mb-3">
+                <label class="input-group-text" for="nama"><i class="bi bi-person-vcard fs-5"></i></label>
+                <input type="text" name="nama" class="form-control border-light-subtle rounded-end px-2 @error('nama') is-invalid @enderror" id="nama" placeholder="Enter your nama" required value="{{ old('nama') }}">
+                @error('nama')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                @enderror
+            </div>
+
+            <div class="flex-column">
+                <label for="username">Username </label>
+            </div>
+            <div class="input-group mb-3">
+                <label class="input-group-text" for="username"><i class="bi bi-person-badge fs-5"></i></label>
+                <input type="text" name="username" class="form-control border-light-subtle rounded-end px-2 @error('username') is-invalid @enderror" id="username" placeholder="Enter your username" required value="{{ old('username') }}">
+                @error('username')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                @enderror
+            </div>
+
+            <div class="flex-column">
+                <label for="email">Email </label>
+            </div>
+            <div class="input-group mb-3">
+                <label class="input-group-text" for="email"><i class="bi bi-envelope fs-5"></i></label>
+                <input type="email" name="email" class="form-control border-light-subtle rounded-end px-2 @error('email') is-invalid @enderror" id="email" placeholder="Enter your Email" required value="{{ old('email') }}">
+                @error('email')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                @enderror
+            </div>
+            
+
+            <div class="flex-column">
+                <label for="role">Tipe Akun </label>
+            </div>
+            <div class="input-group mb-3">
+                <label class="input-group-text" for="role"><i class="bi bi-person-fill fs-5"></i></label>
+                <select name="role" class="form-select @error('role') is-invalid @enderror" id="role" >
+                    <option selected>Choose...</option>
+                    <option value="Guru">Guru</option>
+                    <option value="Siswa">Siswa</option>
+                </select>
+                @error('role')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                @enderror
+            </div>
+
+            <div class="flex-column">
+                <label for="password">Password </label>
+            </div>
+            <div class="input-group mb-3">
+                <label class="input-group-text" for="password"><i class="bi bi-lock fs-5"></i></label>
+                <input type="password" name="password" class="form-control border-light-subtle rounded-end px-2 @error('password') is-invalid @enderror" id="password" placeholder="Enter your password" required value="{{ old('password') }}">
+                @error('password')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                @enderror
+            </div>
+
+            <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Tambah User!</button>
+        </form>
+    </div>
+@endsection
