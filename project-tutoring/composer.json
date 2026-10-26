@@ -1,9 +1,9 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "edulearn/web-tutoring",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "EduLearn: platform kelas daring sederhana untuk guru dan siswa.",
+    "keywords": ["laravel", "e-learning", "tutoring"],
     "license": "MIT",
     "require": {
         "php": "^8.3",

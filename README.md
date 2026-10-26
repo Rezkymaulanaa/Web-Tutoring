@@ -1,7 +1,3 @@
 # Web-Tutoring
 
-Cara jalankan web nya : 
-Buka pada terminal nya
-1. Jalankan php artisan migrate
-2. Jalankan php artisan db:seed
-3. Jalankan php artisan serve
+Kode aplikasi **EduLearn** ada di folder [`project-tutoring`](project-tutoring). Cara instalasi, fitur, dan penjelasan teknisnya ada di [README proyek](project-tutoring/README.md).
