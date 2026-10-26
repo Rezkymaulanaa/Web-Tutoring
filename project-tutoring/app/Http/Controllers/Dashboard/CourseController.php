@@ -5,22 +5,33 @@ namespace App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CourseRequest;
 use App\Models\Course;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class CourseController extends Controller
 {
-    public function index(): View
+    /**
+     * Admin melihat semua course, Guru hanya course miliknya.
+     */
+    public function index(Request $request): View
     {
-        $courses = Course::with('user')->latest()->get();
+        $user = $request->user();
 
-        return view('dashboard.course.index', compact('courses'));
+        $courses = Course::with('user')
+            ->withCount('contents')
+            ->when(! $user->isAdmin(), fn (Builder $query) => $query->whereBelongsTo($user))
+            ->latest()
+            ->get();
+
+        return view('dashboard.courses.index', compact('courses'));
     }
 
     public function create(): View
     {
-        return view('dashboard.course.create');
+        return view('dashboard.courses.create');
     }
 
     public function store(CourseRequest $request): RedirectResponse
@@ -34,7 +45,7 @@ class CourseController extends Controller
     {
         Gate::authorize('update', $course);
 
-        return view('dashboard.course.edit', compact('course'));
+        return view('dashboard.courses.edit', compact('course'));
     }
 
     public function update(CourseRequest $request, Course $course): RedirectResponse

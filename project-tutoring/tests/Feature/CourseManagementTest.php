@@ -36,14 +36,27 @@ class CourseManagementTest extends TestCase
             ->assertForbidden();
     }
 
-    public function test_guru_can_view_course_list(): void
+    public function test_guru_sees_only_own_courses_in_dashboard(): void
     {
-        $course = Course::factory()->create();
+        $own = Course::factory()->create(['course' => 'Course Milik Sendiri']);
+        $other = Course::factory()->create(['course' => 'Course Guru Lain']);
 
-        $this->actingAs(User::factory()->guru()->create())
+        $this->actingAs($own->user)
             ->get(route('dashboard.courses.index'))
             ->assertOk()
-            ->assertSee($course->course);
+            ->assertSee($own->course)
+            ->assertDontSee($other->course);
+    }
+
+    public function test_admin_sees_all_courses_in_dashboard(): void
+    {
+        $courses = Course::factory()->count(2)->create();
+
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('dashboard.courses.index'))
+            ->assertOk()
+            ->assertSee($courses[0]->course)
+            ->assertSee($courses[1]->course);
     }
 
     public function test_guru_can_create_course(): void

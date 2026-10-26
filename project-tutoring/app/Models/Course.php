@@ -37,9 +37,13 @@ class Course extends Model
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * Materi diurutkan sesuai urutan dibuat. Tanpa ORDER BY, database bebas memakai urutan index
+     * (misalnya urut abjad slug), sehingga "Materi 1, 2, 3" bisa tertukar.
+     */
     public function contents(): HasMany
     {
-        return $this->hasMany(Content::class);
+        return $this->hasMany(Content::class)->orderBy('id');
     }
 
     /**
@@ -63,6 +67,19 @@ class Course extends Model
                 'viewers', fn (Builder $query) => $query->whereKey($user->id),
             ),
         ]));
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'start_date' => 'date',
+            'end_date' => 'date',
+        ];
     }
 
     /**

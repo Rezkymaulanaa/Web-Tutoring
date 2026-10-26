@@ -7,6 +7,7 @@ use App\Http\Requests\ContentRequest;
 use App\Models\Content;
 use App\Models\Course;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -15,18 +16,26 @@ use Illuminate\View\View;
 
 class ContentController extends Controller
 {
-    public function index(): View
+    /**
+     * Admin melihat semua materi, Guru hanya materi di course miliknya.
+     */
+    public function index(Request $request): View
     {
-        $contents = Content::with('course')->latest()->get();
+        $user = $request->user();
 
-        return view('dashboard.content.index', compact('contents'));
+        $contents = Content::with('course')
+            ->when(! $user->isAdmin(), fn (Builder $query) => $query->whereIn('course_id', $user->courses()->select('id')))
+            ->latest()
+            ->get();
+
+        return view('dashboard.contents.index', compact('contents'));
     }
 
     public function create(Request $request): View
     {
         $courses = $this->manageableCourses($request->user());
 
-        return view('dashboard.content.create', compact('courses'));
+        return view('dashboard.contents.create', compact('courses'));
     }
 
     public function store(ContentRequest $request): RedirectResponse
@@ -42,7 +51,7 @@ class ContentController extends Controller
 
         $courses = $this->manageableCourses($request->user());
 
-        return view('dashboard.content.edit', compact('content', 'courses'));
+        return view('dashboard.contents.edit', compact('content', 'courses'));
     }
 
     public function update(ContentRequest $request, Content $content): RedirectResponse

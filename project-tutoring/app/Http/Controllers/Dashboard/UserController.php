@@ -18,12 +18,12 @@ class UserController extends Controller
         $gurus = User::where('role', UserRole::Guru)->orderBy('nama')->get();
         $siswas = User::where('role', UserRole::Siswa)->orderBy('nama')->get();
 
-        return view('dashboard.user.user', compact('gurus', 'siswas'));
+        return view('dashboard.users.index', compact('gurus', 'siswas'));
     }
 
     public function create(): View
     {
-        return view('dashboard.user.create');
+        return view('dashboard.users.create');
     }
 
     public function store(StoreUserRequest $request): RedirectResponse
@@ -37,7 +37,7 @@ class UserController extends Controller
     {
         Gate::authorize('update', $user);
 
-        return view('dashboard.user.edit', compact('user'));
+        return view('dashboard.users.edit', compact('user'));
     }
 
     public function update(UpdateUserRequest $request, User $user): RedirectResponse

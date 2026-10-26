@@ -58,7 +58,7 @@ class PublicPagesTest extends TestCase
 
         $this->get(route('courses.index', ['search' => 'tidak-ada-yang-cocok']))
             ->assertOk()
-            ->assertSee('does not exist');
+            ->assertSee('Kelas tidak ditemukan');
     }
 
     public function test_empty_search_shows_all_courses(): void

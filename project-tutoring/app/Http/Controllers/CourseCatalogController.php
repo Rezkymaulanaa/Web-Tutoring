@@ -21,6 +21,6 @@ class CourseCatalogController extends Controller
             ->latest()
             ->get();
 
-        return view('kelas', compact('courses', 'searchTerm'));
+        return view('courses.index', compact('courses', 'searchTerm'));
     }
 }

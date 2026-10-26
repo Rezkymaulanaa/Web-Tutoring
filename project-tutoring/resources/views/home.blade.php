@@ -1,149 +1,76 @@
-@extends('layouts.main')
-
-@section('container')
-    <style>
-        .heading {
-            color: #00006b;
-        }
-        .container h1 {
-            font-size: 3.5rem;
-        }
-
-        .about-section img{
-            width: 150px;
-        }
-        .sub-heading {
-            color: #38B6FF;
-        }
-        .label {
-            height: 30px;
-            align-items: center;
-            justify-content: center;
-            margin-top: 35px;
-            right: 0;
-            bottom: 45%;
-        }
-        .kontak {
-            width: 40px;
-            height: 40px;
-            background-color: rgb(0, 156, 0);
-            right: 15px;
-            bottom: 15px;
-        } 
-        .carousel-control-prev {
-            height: 90px;
-            width: 90px;
-            top: 41%;
-        }
-        .carousel-control-next {
-            height: 90px;
-            width: 90px;
-            top: 41%;
-        }
-    </style>
-
-    <section class="home-section py-5" id="home-section">
-        <div class="container d-flex ">
-            <div class="row align-items-center justify-content-center">
-                <div class="col-md-6">
-                    <h6 class="text-secondary">INGIN BELAJAR MUDAH ?</h6>
-                    <h1 class="heading fw-bold mt-3">Belajar Disini Aja</h1>
-                    <p class="mt-4">Dengan materi mudah dimengerti dan berbentuk video sehingga membantu proses pembelajaran anda</p>
-                    <a href="{{ route('courses.index') }}"><button class="btn btn-warning mt-4 text-white px-5 py-2 fw-medium rounded-pill">Belajar Sekarang</button></a>
-                </div>
-                <div class="col-md-6">
-                    <img src="{{ asset('images/edu-logo.png') }}" alt="edu-logo">
+<x-layouts.app>
+    {{-- Hero --}}
+    <section class="bg-white">
+        <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 sm:px-6 md:grid-cols-2 md:py-24">
+            <div>
+                <p class="inline-flex items-center gap-2 rounded-full bg-accent-100 px-3 py-1 text-sm font-medium text-slate-900">
+                    <x-heroicon-s-sparkles class="size-4 text-accent-500" aria-hidden="true" />
+                    Ingin belajar dengan mudah?
+                </p>
+                <h1 class="mt-5 text-4xl font-bold tracking-tight text-brand-950 sm:text-5xl">
+                    Belajar di mana saja, kapan saja.
+                </h1>
+                <p class="mt-5 max-w-prose text-lg leading-8 text-slate-600">
+                    Materi yang mudah dipahami, dilengkapi video, dan disusun langsung oleh guru. Pantau progres belajarmu di setiap kelas.
+                </p>
+                <div class="mt-8 flex flex-wrap gap-3">
+                    <x-button :href="route('courses.index')" size="lg">
+                        Jelajahi kelas
+                        <x-heroicon-m-arrow-right class="size-5" aria-hidden="true" />
+                    </x-button>
+                    @guest
+                        <x-button :href="route('register')" variant="secondary" size="lg">Daftar gratis</x-button>
+                    @endguest
                 </div>
             </div>
+            <img src="{{ asset('images/edu-logo.png') }}" alt="" width="560" height="420" class="mx-auto w-full max-w-md">
         </div>
     </section>
 
-    <hr  id="about-section">
+    {{-- Statistik asli dari database --}}
+    <section id="tentang" aria-labelledby="tentang-heading" class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+        <h2 id="tentang-heading" class="text-center text-3xl font-bold text-brand-950">Tentang EduLearn</h2>
+        <p class="mx-auto mt-3 max-w-2xl text-center text-slate-600">
+            EduLearn mempertemukan guru dan siswa dalam satu tempat: guru menyusun materi, siswa belajar sesuai kecepatannya sendiri.
+        </p>
 
-    <section class="py-5 my-5 about-section" >
-        <!-- Konten untuk bagian About -->
-        <h1 class="heading fw-medium fs-1 text-center ">Tentang Kami</h1>
-        <div class="container mt-5">
-            <div class="row">
-                <div class="col-md-4 d-flex align-items-center justify-content-center">
-                    <div class="cards text-center">
-                        <img class="bg-white" src="{{ asset('images/students-logo.png') }}" alt="student-logo">
-                        <h1 class="sub-heading">200.000+</h1>
-                        <p>Siswa Mendaftar</p>
-                    </div>
+        <dl class="mt-10 grid gap-6 sm:grid-cols-3">
+            @foreach ([
+                ['label' => 'Siswa terdaftar', 'value' => $stats['siswa'], 'image' => 'students-logo.png'],
+                ['label' => 'Guru bergabung', 'value' => $stats['guru'], 'image' => 'teachers-logo.png'],
+                ['label' => 'Materi tersedia', 'value' => $stats['materi'], 'image' => 'courses-logo.png'],
+            ] as $stat)
+                <div class="flex flex-col items-center rounded-xl border border-slate-200 bg-white p-6 text-center shadow-sm">
+                    <img src="{{ asset('images/'.$stat['image']) }}" alt="" width="96" height="96" class="size-24 object-contain">
+                    <dt class="order-last mt-1 text-slate-600">{{ $stat['label'] }}</dt>
+                    <dd class="mt-4 text-4xl font-bold text-brand-700">{{ number_format($stat['value'], 0, ',', '.') }}</dd>
                 </div>
-                <div class="col-md-4 d-flex align-items-center justify-content-center">
-                    <div class="cards text-center">
-                        <img src="{{ asset('images/teachers-logo.png') }}" alt="student-logo">
-                        <h1 class="sub-heading">50.000+</h1>
-                        <p>Guru Bergabung</p>
-                    </div>
-                </div>
-                <div class="col-md-4 d-flex align-items-center justify-content-center">
-                    <div class="cards text-center">
-                        <img src="{{ asset('images/courses-logo.png') }}" alt="student-logo">
-                        <h1 class="sub-heading">550.000+</h1>
-                        <p>Materi untuk melatih kemampuan</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+            @endforeach
+        </dl>
     </section>
 
-    <hr  id="populer-section">
+    {{-- Course terbaru --}}
+    <section aria-labelledby="populer-heading" class="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+        <div class="flex flex-wrap items-end justify-between gap-4">
+            <div>
+                <h2 id="populer-heading" class="text-3xl font-bold text-brand-950">Kelas terbaru</h2>
+                <p class="mt-2 text-slate-600">Mulai dari kelas yang baru saja dibuka.</p>
+            </div>
+            <a href="{{ route('courses.index') }}" class="inline-flex items-center gap-1 font-semibold text-brand-700 hover:underline">
+                Lihat semua kelas <x-heroicon-m-arrow-right class="size-4" aria-hidden="true" />
+            </a>
+        </div>
 
-    <section class="py-5 my-5 populer-section">
-        <!-- Konten untuk bagian Populer -->
-        <h1 class="heading fw-medium fs-1 mb-5 text-center">Course Populer</h1>
-    
-        <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-inner">
-                @foreach ($courses->chunk(3) as $chunk)
-                    <div class="carousel-item {{ $loop->first ? 'active' : '' }}">
-                        <div class="row">
-                            @foreach ($chunk as $course)
-                                <div class="col-md-4 my-3">
-                                    <div class="card">
-                                        <div class="label d-flex bg-warning position-absolute px-3 rounded-start">
-                                            <p class="fw-medium fst-italic my-auto mx-auto"><small>{{ $course->start_date }} - {{ $course->end_date }}</small></p>
-                                        </div>
-                                        <img src="{{ asset('images/kelas.png') }}" class="card-img-top mx-auto" alt="math-logo" style=" object-fit:contain;width:16rem;">
-                                        <hr>
-                                        <div class="card-body">
-                                            @if(auth()->user()?->isSiswa())
-                                                <div class="progress mb-3 w-50">
-                                                    <div class="progress-bar overflow-visible" role="progressbar" style="width: {{ $course->progress }}%;" aria-valuenow="{{ $course->progress }}" aria-valuemin="0" aria-valuemax="100">{{ $course->progress }}%</div>
-                                                </div>
-                                            @endif
-                                          <h5 class="card-title">{{ $course->course }}</h5>
-                                          <p class="card-text">{{ Str::limit($course->deskripsi, 200) }}</p>
-                                          <h6 class="card-title mb-3"><small>Pengajar: {{ $course->user->nama }}</small></h6>
-                                          @auth
-                                            <a href="{{ route('courses.show', $course) }}" class="btn btn-warning text-white w-25">Lihat</a>
-                                            <div class="kontak d-flex position-absolute rounded-circle shadow">
-                                                <a class="text-decoration-none mx-auto my-auto" href="https://api.whatsapp.com/send/?phone=[dihapus]&text=Halo Kak&type=phone_number&app_absent=0" target="_blank"><i class="bi bi-whatsapp fs-5 text-white"></i></a>
-                                            </div>
-                                            @else
-                                            <a href="{{ route('login') }}" class="btn btn-warning text-white w-25">Lihat</a>
-                                          @endauth
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
+        @if ($courses->isEmpty())
+            <x-empty-state title="Belum ada kelas" icon="heroicon-o-book-open" class="mt-8">
+                Kelas akan muncul di sini setelah guru membuatnya.
+            </x-empty-state>
+        @else
+            <ul class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                @foreach ($courses as $course)
+                    <li><x-course-card :course="$course" /></li>
                 @endforeach
-            </div>
-            <button class="carousel-control-prev bg-dark d-flex align-items-center" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon bg-dark" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next bg-dark" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
-                <span class="carousel-control-next-icon bg-dark" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
-        </div>
+            </ul>
+        @endif
     </section>
-    
-    
-@endsection
+</x-layouts.app>

@@ -1,0 +1,58 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/forms';
+
+@source '../../storage/framework/views/*.php';
+
+/*
+ * Design token EduLearn.
+ * Semua pasangan warna teks/latar yang dipakai sudah dicek kontrasnya
+ * (minimal 4.5:1 untuk teks biasa sesuai WCAG 2.2 AA):
+ *   brand-700 di atas putih ........ 6.7:1   (tombol utama, link)
+ *   slate-600 di atas putih ........ 7.6:1   (teks sekunder)
+ *   slate-900 di atas accent-400 ... 11.4:1  (badge/sorotan)
+ *   red-700 di atas putih .......... 6.5:1   (pesan error)
+ */
+@theme {
+    --font-sans: 'Segoe UI', ui-sans-serif, system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+
+    --color-brand-50: #eff6ff;
+    --color-brand-100: #dbeafe;
+    --color-brand-200: #bfdbfe;
+    --color-brand-500: #3b82f6;
+    --color-brand-600: #2563eb;
+    --color-brand-700: #1d4ed8;
+    --color-brand-800: #1e40af;
+    --color-brand-900: #1e3a8a;
+    --color-brand-950: #112849;
+
+    /* Biru muda dari logo EduLearn, hanya untuk dekorasi (kontrasnya terlalu rendah untuk teks). */
+    --color-logo: #38b6ff;
+
+    --color-accent-100: #fef3c7;
+    --color-accent-400: #fbbf24;
+    --color-accent-500: #f59e0b;
+}
+
+@layer base {
+    html {
+        scroll-padding-top: 5rem;
+    }
+
+    /* Indikator fokus keyboard yang selalu terlihat (WCAG 2.4.7 & 2.4.11) */
+    :focus-visible {
+        outline: 3px solid var(--color-brand-600);
+        outline-offset: 2px;
+        border-radius: 0.25rem;
+    }
+
+    /* Hormati pengguna yang memilih mengurangi animasi (WCAG 2.3.3) */
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+        }
+    }
+}

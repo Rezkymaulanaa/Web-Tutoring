@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CourseCatalogController;
 use App\Http\Controllers\Dashboard\ContentController;
 use App\Http\Controllers\Dashboard\CourseController;
+use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Dashboard\UserController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LearningController;
@@ -37,7 +38,7 @@ Route::middleware('auth')->group(function () {
 
     // Dashboard untuk Admin & Guru. Dashboard memakai ID (bukan slug) karena slug materi hanya unik per course.
     Route::middleware('role:Admin,Guru')->group(function () {
-        Route::view('/dashboard', 'dashboard.index')->name('dashboard');
+        Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
         Route::prefix('dashboard')->name('dashboard.')->group(function () {
             Route::resource('courses', CourseController::class)->except('show')->scoped(['course' => 'id']);

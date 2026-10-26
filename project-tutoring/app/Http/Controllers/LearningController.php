@@ -16,7 +16,7 @@ class LearningController extends Controller
     {
         $course->load('user', 'contents');
 
-        return view('content.index', compact('course'));
+        return view('courses.show', compact('course'));
     }
 
     /**
@@ -32,6 +32,12 @@ class LearningController extends Controller
             ]);
         }
 
-        return view('content.show', compact('course', 'content'));
+        // Urutan materi mengikuti urutan dibuat, untuk tombol "sebelumnya" & "berikutnya"
+        $index = $course->contents->search(fn (Content $item) => $item->is($content));
+        $position = $index + 1;
+        $previous = $course->contents->get($index - 1);
+        $next = $course->contents->get($index + 1);
+
+        return view('courses.content', compact('course', 'content', 'position', 'previous', 'next'));
     }
 }
