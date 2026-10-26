@@ -36,7 +36,7 @@ class PublicPagesTest extends TestCase
         Course::factory()->create(['course' => 'Matematika Dasar']);
         Course::factory()->create(['course' => 'Biologi Sel']);
 
-        $this->get(route('course.search', ['search' => 'Matematika']))
+        $this->get(route('courses.index', ['search' => 'Matematika']))
             ->assertOk()
             ->assertSee('Matematika Dasar')
             ->assertDontSee('Biologi Sel');
@@ -47,7 +47,7 @@ class PublicPagesTest extends TestCase
         $guru = User::factory()->guru()->create(['nama' => 'Siti Rahma']);
         Course::factory()->for($guru)->create(['course' => 'Kimia Organik']);
 
-        $this->get(route('course.search', ['search' => 'Siti']))
+        $this->get(route('courses.index', ['search' => 'Siti']))
             ->assertOk()
             ->assertSee('Kimia Organik');
     }
@@ -56,14 +56,17 @@ class PublicPagesTest extends TestCase
     {
         Course::factory()->create();
 
-        $this->get(route('course.search', ['search' => 'tidak-ada-yang-cocok']))
+        $this->get(route('courses.index', ['search' => 'tidak-ada-yang-cocok']))
             ->assertOk()
             ->assertSee('does not exist');
     }
 
-    public function test_empty_search_redirects_to_course_list(): void
+    public function test_empty_search_shows_all_courses(): void
     {
-        $this->get(route('course.search', ['search' => '']))
-            ->assertRedirect(route('courses.index'));
+        $course = Course::factory()->create();
+
+        $this->get(route('courses.index', ['search' => '']))
+            ->assertOk()
+            ->assertSee($course->course);
     }
 }

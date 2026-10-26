@@ -6,6 +6,7 @@ use App\Models\Content;
 use App\Models\Course;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class LearningTest extends TestCase
@@ -18,7 +19,7 @@ class LearningTest extends TestCase
         $course = $content->course;
 
         $this->actingAs(User::factory()->siswa()->create())
-            ->get(route('content.index', $course))
+            ->get(route('courses.show', $course))
             ->assertOk()
             ->assertSee($course->deskripsi)
             ->assertSee($course->user->nama)
@@ -30,7 +31,7 @@ class LearningTest extends TestCase
         $course = Course::factory()->create();
 
         $this->actingAs(User::factory()->siswa()->create())
-            ->get(route('content.index', $course))
+            ->get(route('courses.show', $course))
             ->assertOk()
             ->assertSee('belum memiliki materi');
     }
@@ -38,7 +39,7 @@ class LearningTest extends TestCase
     public function test_unknown_course_returns_404(): void
     {
         $this->actingAs(User::factory()->siswa()->create())
-            ->get('/content/tidak-ada')
+            ->get('/courses/tidak-ada')
             ->assertNotFound();
     }
 
@@ -47,7 +48,7 @@ class LearningTest extends TestCase
         $content = Content::factory()->create(['youtube_link' => 'https://youtu.be/abcDEF12345']);
 
         $this->actingAs(User::factory()->siswa()->create())
-            ->get(route('show.content', [$content->course, $content]))
+            ->get(route('courses.contents.show', [$content->course, $content]))
             ->assertOk()
             ->assertSee($content->title)
             ->assertSee('https://www.youtube.com/embed/abcDEF12345');
@@ -57,7 +58,7 @@ class LearningTest extends TestCase
     {
         $content = Content::factory()->create();
         $siswa = User::factory()->siswa()->create();
-        $url = route('show.content', [$content->course, $content]);
+        $url = route('courses.contents.show', [$content->course, $content]);
 
         $this->actingAs($siswa)->get($url)->assertOk();
         $this->actingAs($siswa)->get($url)->assertOk();
@@ -75,10 +76,30 @@ class LearningTest extends TestCase
         $content = Content::factory()->create();
 
         $this->actingAs($content->course->user)
-            ->get(route('show.content', [$content->course, $content]))
+            ->get(route('courses.contents.show', [$content->course, $content]))
             ->assertOk();
 
         $this->assertDatabaseCount('content_history', 0);
+    }
+
+    public function test_course_list_query_count_does_not_grow_with_number_of_courses(): void
+    {
+        $siswa = User::factory()->siswa()->create();
+        $countQueries = function () use ($siswa): int {
+            DB::flushQueryLog();
+            DB::enableQueryLog();
+            $this->actingAs($siswa)->get(route('courses.index'))->assertOk();
+
+            return count(DB::getQueryLog());
+        };
+
+        Content::factory()->count(3)->create();
+        $withThreeCourses = $countQueries();
+
+        Content::factory()->count(10)->create();
+        $withThirteenCourses = $countQueries();
+
+        $this->assertSame($withThreeCourses, $withThirteenCourses);
     }
 
     public function test_siswa_sees_progress_per_course(): void
@@ -87,7 +108,7 @@ class LearningTest extends TestCase
         [$opened] = Content::factory()->count(2)->for($course)->create(['user_id' => $course->user_id]);
         $siswa = User::factory()->siswa()->create();
 
-        $this->actingAs($siswa)->get(route('show.content', [$course, $opened]));
+        $this->actingAs($siswa)->get(route('courses.contents.show', [$course, $opened]));
 
         $this->actingAs($siswa)
             ->get(route('courses.index'))

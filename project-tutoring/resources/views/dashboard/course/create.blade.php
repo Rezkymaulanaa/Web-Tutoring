@@ -6,7 +6,7 @@
     </div>
 
     <div class="container">
-        <form action="{{ route('storeCourse') }}" method="post">
+        <form action="{{ route('dashboard.courses.store') }}" method="post">
             @csrf
 
             <div class="mb-3">

@@ -113,7 +113,7 @@
 @endpush
 @section('container')
     <div class="container d-flex justify-content-center my-5">
-        <form class="form bg-light" action="{{ route('registrasi') }}" method="post">
+        <form class="form bg-light" action="{{ route('register') }}" method="post">
             @csrf
 
             <h1 class="heading fw-bolder fs-1">Daftar</h1>

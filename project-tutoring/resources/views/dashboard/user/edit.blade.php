@@ -6,7 +6,7 @@
     </div>
 
     <div class="container">
-        <form action="{{ route('update', $user) }}" method="POST">
+        <form action="{{ route('dashboard.users.update', $user) }}" method="POST">
             @csrf
             @method('PUT')
              <div class="flex-column">
@@ -55,10 +55,10 @@
             <div class="input-group mb-3">
                 <label class="input-group-text" for="role"><i class="bi bi-person-fill fs-5"></i></label>
                 <select name="role" class="form-select @error('role') is-invalid @enderror" id="role" >
-                    @if ($user->role === 'Guru')
+                    @if ($user->isGuru())
                         <option value="Guru" selected>Guru</option>
                         <option value="Siswa">Siswa</option>
-                    @elseif ($user->role === 'Siswa')
+                    @elseif ($user->isSiswa())
                         <option value="Siswa" selected>Siswa</option>
                         <option value="Guru">Guru</option>
                     @endif

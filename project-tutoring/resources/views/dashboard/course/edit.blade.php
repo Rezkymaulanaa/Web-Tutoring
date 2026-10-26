@@ -6,7 +6,7 @@
     </div>
 
     <div class="container">
-        <form action="{{ route('updateCourse', $course) }}" method="post">
+        <form action="{{ route('dashboard.courses.update', $course) }}" method="post">
             @csrf
             @method('PUT')
 

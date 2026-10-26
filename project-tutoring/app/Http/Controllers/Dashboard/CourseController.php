@@ -1,0 +1,57 @@
+<?php
+
+namespace App\Http\Controllers\Dashboard;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\CourseRequest;
+use App\Models\Course;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\View\View;
+
+class CourseController extends Controller
+{
+    public function index(): View
+    {
+        $courses = Course::with('user')->latest()->get();
+
+        return view('dashboard.course.index', compact('courses'));
+    }
+
+    public function create(): View
+    {
+        return view('dashboard.course.create');
+    }
+
+    public function store(CourseRequest $request): RedirectResponse
+    {
+        $request->user()->courses()->create($request->validated());
+
+        return redirect()->route('dashboard.courses.index')->with('success', 'Berhasil menambahkan course!');
+    }
+
+    public function edit(Course $course): View
+    {
+        Gate::authorize('update', $course);
+
+        return view('dashboard.course.edit', compact('course'));
+    }
+
+    public function update(CourseRequest $request, Course $course): RedirectResponse
+    {
+        Gate::authorize('update', $course);
+
+        $course->update($request->validated());
+
+        return redirect()->route('dashboard.courses.index')->with('success', 'Data course berhasil diperbarui');
+    }
+
+    public function destroy(Course $course): RedirectResponse
+    {
+        Gate::authorize('delete', $course);
+
+        $course->delete();
+
+        return redirect()->route('dashboard.courses.index')->with('success', 'Course berhasil dihapus');
+    }
+}

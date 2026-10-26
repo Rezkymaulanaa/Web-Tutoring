@@ -43,7 +43,7 @@
                     <li class="dropdown-item fw-medium">{{ auth()->user()->username }}</li>
                     <li><hr class="dropdown-divider"></li>
 
-                    @if(auth()->user() && auth()->user()->role !== 'Siswa')
+                    @if(! auth()->user()->isSiswa())
                     <li><a class="dropdown-item" href="/dashboard"><i class="bi bi-layout-text-window-reverse me-1"></i>Dashboard</a></li>
                     @endif
                     
@@ -59,7 +59,7 @@
                 </ul>
                 @else
                 <a class="nav-link my-auto me-4" href="{{ route('login') }}">Masuk</a>
-                <a class="nav-link " href="/registrasi"><button class="btn btn-warning text-white fw-medium rounded-pill">Daftar</button></a>
+                <a class="nav-link " href="{{ route('register') }}"><button class="btn btn-warning text-white fw-medium rounded-pill">Daftar</button></a>
                 @endauth
             </ul>
         </div>

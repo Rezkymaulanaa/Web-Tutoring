@@ -166,7 +166,7 @@
 
             <button class="button-submit btn btn-warning text-white fw-medium" type="submit">Masuk</button>
 
-            <p class="p">Don't have an account? <a href="{{ route('registrasi') }}" class="span">Daftar</a>
+            <p class="p">Don't have an account? <a href="{{ route('register') }}" class="span">Daftar</a>
             </p>
         </form>
     </div>

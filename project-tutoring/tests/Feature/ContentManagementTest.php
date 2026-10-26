@@ -15,7 +15,7 @@ class ContentManagementTest extends TestCase
     public function test_siswa_cannot_open_content_management(): void
     {
         $this->actingAs(User::factory()->siswa()->create())
-            ->get(route('content.show'))
+            ->get(route('dashboard.contents.index'))
             ->assertForbidden();
     }
 
@@ -24,7 +24,7 @@ class ContentManagementTest extends TestCase
         $content = Content::factory()->create();
 
         $this->actingAs($content->course->user)
-            ->get(route('content.show'))
+            ->get(route('dashboard.contents.index'))
             ->assertOk()
             ->assertSee($content->title);
     }
@@ -35,15 +35,15 @@ class ContentManagementTest extends TestCase
         $guru = $course->user;
 
         $this->actingAs($guru)
-            ->get(route('createContent'))
+            ->get(route('dashboard.contents.create'))
             ->assertOk()
             ->assertSee($course->course);
 
-        $this->actingAs($guru)->post(route('storeContent'), [
+        $this->actingAs($guru)->post(route('dashboard.contents.store'), [
             'title' => 'Hukum Newton 1',
             'content' => 'Benda diam tetap diam.',
-            'link' => 'https://youtu.be/abcDEF12345',
-            'course' => $course->id,
+            'youtube_link' => 'https://youtu.be/abcDEF12345',
+            'course_id' => $course->id,
         ])->assertRedirect();
 
         $this->assertDatabaseHas('contents', [
@@ -58,8 +58,8 @@ class ContentManagementTest extends TestCase
     {
         $course = Course::factory()->create();
 
-        $this->actingAs($course->user)->post(route('storeContent'), [
-            'course' => $course->id,
+        $this->actingAs($course->user)->post(route('dashboard.contents.store'), [
+            'course_id' => $course->id,
         ])->assertSessionHasErrors(['title', 'content']);
     }
 
@@ -69,15 +69,15 @@ class ContentManagementTest extends TestCase
         $guru = $content->course->user;
 
         $this->actingAs($guru)
-            ->get(route('editContent', ['id' => $content->id]))
+            ->get(route('dashboard.contents.edit', $content))
             ->assertOk();
 
-        $this->actingAs($guru)->put(route('updateContent', ['id' => $content->id]), [
+        $this->actingAs($guru)->put(route('dashboard.contents.update', $content), [
             'title' => 'Judul Baru',
             'content' => 'Isi baru.',
-            'link' => 'https://youtu.be/xyzXYZ78901',
-            'course' => $content->course_id,
-        ])->assertRedirect(route('content.show'));
+            'youtube_link' => 'https://youtu.be/xyzXYZ78901',
+            'course_id' => $content->course_id,
+        ])->assertRedirect(route('dashboard.contents.index'));
 
         $this->assertSame('Judul Baru', $content->fresh()->title);
     }
@@ -87,7 +87,7 @@ class ContentManagementTest extends TestCase
         $content = Content::factory()->create();
 
         $this->actingAs(User::factory()->guru()->create())
-            ->get(route('editContent', ['id' => $content->id]))
+            ->get(route('dashboard.contents.edit', $content))
             ->assertForbidden();
     }
 
@@ -96,8 +96,8 @@ class ContentManagementTest extends TestCase
         $content = Content::factory()->create();
 
         $this->actingAs($content->course->user)
-            ->delete(route('destroyContent', ['id' => $content->id]))
-            ->assertRedirect(route('content.show'));
+            ->delete(route('dashboard.contents.destroy', $content))
+            ->assertRedirect(route('dashboard.contents.index'));
 
         $this->assertModelMissing($content);
     }
@@ -107,7 +107,7 @@ class ContentManagementTest extends TestCase
         $content = Content::factory()->create();
 
         $this->actingAs(User::factory()->guru()->create())
-            ->delete(route('destroyContent', ['id' => $content->id]))
+            ->delete(route('dashboard.contents.destroy', $content))
             ->assertForbidden();
 
         $this->assertModelExists($content);
@@ -118,7 +118,7 @@ class ContentManagementTest extends TestCase
         $content = Content::factory()->create();
 
         $this->actingAs(User::factory()->admin()->create())
-            ->delete(route('destroyContent', ['id' => $content->id]));
+            ->delete(route('dashboard.contents.destroy', $content));
 
         $this->assertModelMissing($content);
     }

@@ -5,7 +5,7 @@
         <h1 class="h2 ms-4 ">Tambah Materi</h1>
     </div>
 
-    <form action="{{ route('storeContent') }}" method="post">
+    <form action="{{ route('dashboard.contents.store') }}" method="post">
         @csrf
 
         <div class="mb-3">
@@ -29,8 +29,8 @@
         </div>
 
         <div class="mb-3">
-            <label for="course" class="form-label">Select Course</label>
-            <select class="form-select" id="course" name="course" required>
+            <label for="course_id" class="form-label">Select Course</label>
+            <select class="form-select" id="course_id" name="course_id" required>
                 <option value="">Select a Course</option>
                 @if($courses)
                     @foreach($courses as $course)
@@ -41,9 +41,9 @@
         </div>
 
         <div class="mb-3">
-            <label for="link" class="form-label block mb-2 text-sm font-medium text-gray-900 dark:text-white">Link Youtube (Opsional)</label>
-            <input type="text" name="link" class="form-control bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 @error('link') is-invalid @enderror" id="link" placeholder="Masukkan link youtube" autocomplete="off" value="{{ old('link') }}">
-            @error('link')
+            <label for="youtube_link" class="form-label block mb-2 text-sm font-medium text-gray-900 dark:text-white">Link Youtube (Opsional)</label>
+            <input type="text" name="youtube_link" class="form-control bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 @error('youtube_link') is-invalid @enderror" id="youtube_link" placeholder="Masukkan link youtube" autocomplete="off" value="{{ old('youtube_link') }}">
+            @error('youtube_link')
                 <div class="invalid-feedback">
                     {{ $message }}
                 </div>

@@ -6,7 +6,7 @@
     </div>
 
     <div class="container">
-        <form action="{{ route('store') }}" method="post">
+        <form action="{{ route('dashboard.users.store') }}" method="post">
             @csrf
 
             <div class="flex-column">
@@ -71,7 +71,7 @@
             </div>
             <div class="input-group mb-3">
                 <label class="input-group-text" for="password"><i class="bi bi-lock fs-5"></i></label>
-                <input type="password" name="password" class="form-control border-light-subtle rounded-end px-2 @error('password') is-invalid @enderror" id="password" placeholder="Enter your password" required value="{{ old('password') }}">
+                <input type="password" name="password" class="form-control border-light-subtle rounded-end px-2 @error('password') is-invalid @enderror" id="password" placeholder="Enter your password" required>
                 @error('password')
                     <div class="invalid-feedback">
                         {{ $message }}

@@ -14,8 +14,8 @@
     <div class="container my-5">
         <div class="row mb-5">
             <div class="col-md-8">
-                @if ($youtubeEmbedLink)
-                    <iframe class="rounded shadow" width="750" height="450" src="{{ $youtubeEmbedLink }}" frameborder="0" allowfullscreen></iframe>
+                @if ($content->youtube_embed_url)
+                    <iframe class="rounded shadow" width="750" height="450" src="{{ $content->youtube_embed_url }}" frameborder="0" allowfullscreen></iframe>
                 @endif
             </div>
             <div class="col-md-4 justify-content-end d-flex">
@@ -23,15 +23,15 @@
                     <div class="card-body p-4">
                       <p class="card-title d-flex fs-6">Kelas : <span class="ms-auto fw-medium">{{ $course->course }}</span></p>
                       <hr>
-                      <p class="card-text d-flex fs-6">Pengajar : <span class="ms-auto fw-medium">{{ $pengajar }}</span></p>
+                      <p class="card-text d-flex fs-6">Pengajar : <span class="ms-auto fw-medium">{{ $course->user->nama }}</span></p>
                       <p class="card-text d-flex fs-6">Daftar Materi : </p>
-                      @foreach ($contents as $singleContent)
+                      @foreach ($course->contents as $singleContent)
                         @if ($singleContent->is($content))
-                            <a href="{{ route('show.content', [$course, $singleContent]) }}" class="btn btn-warning shadow-sm text-white px-3 py-1 d-flex justify-content-start mb-2">
+                            <a href="{{ route('courses.contents.show', [$course, $singleContent]) }}" class="btn btn-warning shadow-sm text-white px-3 py-1 d-flex justify-content-start mb-2">
                                 {{ $singleContent->title }}
                             </a>
                         @else
-                            <a href="{{ route('show.content', [$course, $singleContent]) }}" class="btn btn-light text-dark px-3 py-1 d-flex justify-content-start mb-2">
+                            <a href="{{ route('courses.contents.show', [$course, $singleContent]) }}" class="btn btn-light text-dark px-3 py-1 d-flex justify-content-start mb-2">
                                 {{ $singleContent->title }}
                             </a>
                         @endif
@@ -49,7 +49,7 @@
             </div>
             <div class="col-md-4">
                 <div class="back position-absolute d-flex rounded-circle" >
-                    <a href="{{ route('content.index', $course) }}"><i class="bi bi-arrow-left-circle-fill text-warning fs-1 "></i></a>
+                    <a href="{{ route('courses.show', $course) }}"><i class="bi bi-arrow-left-circle-fill text-warning fs-1 "></i></a>
                 </div>
             </div>
         </div>

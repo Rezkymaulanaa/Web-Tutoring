@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
@@ -14,13 +15,13 @@ class AuthTest extends TestCase
     public function test_login_and_register_pages_render_for_guests(): void
     {
         $this->get(route('login'))->assertOk();
-        $this->get(route('registrasi'))->assertOk();
+        $this->get(route('register'))->assertOk();
     }
 
     public function test_guest_can_register_as_siswa(): void
     {
         // Validasi email memakai rule email:dns, jadi domainnya harus bisa di-resolve.
-        $response = $this->post(route('registrasi'), [
+        $response = $this->post(route('register'), [
             'nama' => 'Andi Siswa',
             'username' => 'andisiswa',
             'email' => 'andi.siswa@gmail.com',
@@ -28,11 +29,11 @@ class AuthTest extends TestCase
             'password' => 'rahasia123',
         ]);
 
-        $response->assertRedirect('/login')->assertSessionHas('success');
+        $response->assertRedirect(route('login'))->assertSessionHas('success');
 
         $user = User::where('username', 'andisiswa')->first();
         $this->assertNotNull($user);
-        $this->assertSame('Siswa', $user->role);
+        $this->assertSame(UserRole::Siswa, $user->role);
         $this->assertTrue(Hash::check('rahasia123', $user->password));
     }
 
@@ -40,7 +41,7 @@ class AuthTest extends TestCase
     {
         User::factory()->create(['username' => 'sudahada']);
 
-        $this->post(route('registrasi'), [
+        $this->post(route('register'), [
             'nama' => 'Orang Lain',
             'username' => 'sudahada',
             'email' => 'orang.lain@gmail.com',
@@ -99,7 +100,7 @@ class AuthTest extends TestCase
     public function test_logged_in_user_cannot_open_register_page(): void
     {
         $this->actingAs(User::factory()->create())
-            ->get(route('registrasi'))
+            ->get(route('register'))
             ->assertRedirect();
     }
 

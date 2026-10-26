@@ -17,11 +17,11 @@ class CourseManagementTest extends TestCase
         $this->actingAs(User::factory()->admin()->create())->get(route('dashboard'))->assertOk();
     }
 
-    public function test_siswa_is_redirected_away_from_dashboard(): void
+    public function test_siswa_cannot_open_dashboard(): void
     {
         $this->actingAs(User::factory()->siswa()->create())
             ->get(route('dashboard'))
-            ->assertRedirect('/');
+            ->assertForbidden();
     }
 
     public function test_guest_is_redirected_to_login_from_dashboard(): void
@@ -32,7 +32,7 @@ class CourseManagementTest extends TestCase
     public function test_siswa_cannot_open_course_management(): void
     {
         $this->actingAs(User::factory()->siswa()->create())
-            ->get(route('course.index'))
+            ->get(route('dashboard.courses.index'))
             ->assertForbidden();
     }
 
@@ -41,7 +41,7 @@ class CourseManagementTest extends TestCase
         $course = Course::factory()->create();
 
         $this->actingAs(User::factory()->guru()->create())
-            ->get(route('course.index'))
+            ->get(route('dashboard.courses.index'))
             ->assertOk()
             ->assertSee($course->course);
     }
@@ -50,14 +50,14 @@ class CourseManagementTest extends TestCase
     {
         $guru = User::factory()->guru()->create();
 
-        $this->actingAs($guru)->get(route('createCourse'))->assertOk();
+        $this->actingAs($guru)->get(route('dashboard.courses.create'))->assertOk();
 
-        $this->actingAs($guru)->post(route('storeCourse'), [
+        $this->actingAs($guru)->post(route('dashboard.courses.store'), [
             'course' => 'Fisika Dasar',
             'deskripsi' => 'Belajar hukum Newton.',
             'start_date' => '2024-01-01',
             'end_date' => '2024-02-01',
-        ])->assertRedirect('/dashboard/course');
+        ])->assertRedirect(route('dashboard.courses.index'));
 
         $this->assertDatabaseHas('courses', [
             'course' => 'Fisika Dasar',
@@ -67,7 +67,7 @@ class CourseManagementTest extends TestCase
 
     public function test_course_end_date_must_be_after_start_date(): void
     {
-        $this->actingAs(User::factory()->guru()->create())->post(route('storeCourse'), [
+        $this->actingAs(User::factory()->guru()->create())->post(route('dashboard.courses.store'), [
             'course' => 'Fisika Dasar',
             'deskripsi' => 'Belajar hukum Newton.',
             'start_date' => '2024-02-01',
@@ -81,15 +81,15 @@ class CourseManagementTest extends TestCase
         $guru = $course->user;
 
         $this->actingAs($guru)
-            ->get(route('editCourse', $course))
+            ->get(route('dashboard.courses.edit', $course))
             ->assertOk();
 
-        $this->actingAs($guru)->put(route('updateCourse', $course), [
+        $this->actingAs($guru)->put(route('dashboard.courses.update', $course), [
             'course' => 'Nama Baru',
             'deskripsi' => 'Deskripsi baru.',
             'start_date' => '2024-01-01',
             'end_date' => '2024-02-01',
-        ])->assertRedirect('dashboard/course');
+        ])->assertRedirect(route('dashboard.courses.index'));
 
         $this->assertSame('Nama Baru', $course->fresh()->course);
     }
@@ -99,7 +99,7 @@ class CourseManagementTest extends TestCase
         $course = Course::factory()->create();
 
         $this->actingAs(User::factory()->guru()->create())
-            ->get(route('editCourse', $course))
+            ->get(route('dashboard.courses.edit', $course))
             ->assertForbidden();
     }
 
@@ -108,8 +108,8 @@ class CourseManagementTest extends TestCase
         $course = Course::factory()->create();
 
         $this->actingAs($course->user)
-            ->delete(route('destroyCourse', $course))
-            ->assertRedirect('/dashboard/course');
+            ->delete(route('dashboard.courses.destroy', $course))
+            ->assertRedirect(route('dashboard.courses.index'));
 
         $this->assertModelMissing($course);
     }
@@ -119,7 +119,7 @@ class CourseManagementTest extends TestCase
         $course = Course::factory()->create();
 
         $this->actingAs(User::factory()->guru()->create())
-            ->delete(route('destroyCourse', $course))
+            ->delete(route('dashboard.courses.destroy', $course))
             ->assertForbidden();
 
         $this->assertModelExists($course);
@@ -130,7 +130,7 @@ class CourseManagementTest extends TestCase
         $course = Course::factory()->create();
 
         $this->actingAs(User::factory()->admin()->create())
-            ->delete(route('destroyCourse', $course));
+            ->delete(route('dashboard.courses.destroy', $course));
 
         $this->assertModelMissing($course);
     }

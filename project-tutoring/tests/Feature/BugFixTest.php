@@ -23,8 +23,8 @@ class BugFixTest extends TestCase
         $this->openMaterial(User::factory()->siswa()->create(), $content);
 
         $this->actingAs($content->course->user)
-            ->delete(route('destroyCourse', $content->course))
-            ->assertRedirect('/dashboard/course');
+            ->delete(route('dashboard.courses.destroy', $content->course))
+            ->assertRedirect(route('dashboard.courses.index'));
 
         $this->assertModelMissing($content->course);
         $this->assertDatabaseCount('content_history', 0);
@@ -36,8 +36,8 @@ class BugFixTest extends TestCase
         $this->openMaterial($siswa, Content::factory()->create());
 
         $this->actingAs(User::factory()->admin()->create())
-            ->delete(route('destroy', $siswa))
-            ->assertRedirect('/dashboard/user');
+            ->delete(route('dashboard.users.destroy', $siswa))
+            ->assertRedirect(route('dashboard.users.index'));
 
         $this->assertModelMissing($siswa);
     }
@@ -47,7 +47,7 @@ class BugFixTest extends TestCase
         $course = Course::factory()->create();
 
         $this->actingAs(User::factory()->admin()->create())
-            ->delete(route('destroy', $course->user))
+            ->delete(route('dashboard.users.destroy', $course->user))
             ->assertSessionHasErrors('error');
 
         $this->assertModelExists($course->user);
@@ -82,15 +82,15 @@ class BugFixTest extends TestCase
             'title' => 'Bab 1: Bilangan Bulat',
         ]);
 
-        $this->assertSame(url('/content/matematika-dasar'), route('content.index', $course));
+        $this->assertSame(url('/courses/matematika-dasar'), route('courses.show', $course));
         $this->assertSame(
-            url('/content/matematika-dasar/bab-1-bilangan-bulat'),
-            route('show.content', [$course, $content]),
+            url('/courses/matematika-dasar/bab-1-bilangan-bulat'),
+            route('courses.contents.show', [$course, $content]),
         );
 
         $siswa = User::factory()->siswa()->create();
-        $this->actingAs($siswa)->get('/content/matematika-dasar')->assertOk()->assertSee('Bab 1: Bilangan Bulat');
-        $this->actingAs($siswa)->get('/content/matematika-dasar/bab-1-bilangan-bulat')->assertOk();
+        $this->actingAs($siswa)->get('/courses/matematika-dasar')->assertOk()->assertSee('Bab 1: Bilangan Bulat');
+        $this->actingAs($siswa)->get('/courses/matematika-dasar/bab-1-bilangan-bulat')->assertOk();
     }
 
     public function test_courses_with_same_name_get_different_slugs(): void
@@ -117,7 +117,7 @@ class BugFixTest extends TestCase
         $otherCourse = Course::factory()->create();
 
         $this->actingAs(User::factory()->siswa()->create())
-            ->get("/content/{$otherCourse->slug}/{$content->slug}")
+            ->get("/courses/{$otherCourse->slug}/{$content->slug}")
             ->assertNotFound();
     }
 
@@ -137,11 +137,11 @@ class BugFixTest extends TestCase
         $content = Content::factory()->create();
         $siswa = User::factory()->siswa()->create();
 
-        foreach ([route('login'), route('registrasi')] as $url) {
+        foreach ([route('login'), route('register')] as $url) {
             $this->assertStringStartsWith('<!DOCTYPE html>', ltrim($this->get($url)->getContent()), $url);
         }
 
-        foreach ([route('profile.show'), route('content.index', $content->course), route('show.content', [$content->course, $content])] as $url) {
+        foreach ([route('profile.show'), route('courses.show', $content->course), route('courses.contents.show', [$content->course, $content])] as $url) {
             $this->assertStringStartsWith('<!DOCTYPE html>', ltrim($this->actingAs($siswa)->get($url)->getContent()), $url);
         }
     }
@@ -149,7 +149,7 @@ class BugFixTest extends TestCase
     public function test_login_form_has_no_fake_social_login_buttons(): void
     {
         $this->get(route('login'))->assertDontSee('Or With')->assertDontSee('Google');
-        $this->get(route('registrasi'))->assertDontSee('Or With')->assertDontSee('Google');
+        $this->get(route('register'))->assertDontSee('Or With')->assertDontSee('Google');
     }
 
     public function test_remember_me_keeps_user_logged_in(): void
@@ -168,14 +168,14 @@ class BugFixTest extends TestCase
         $course = Course::factory()->create();
 
         $this->actingAs($course->user)
-            ->get(route('createContent'))
+            ->get(route('dashboard.contents.create'))
             ->assertDontSee('id="link" placeholder="Masukkan link youtube" autocomplete="off" required', false);
 
-        $this->actingAs($course->user)->post(route('storeContent'), [
+        $this->actingAs($course->user)->post(route('dashboard.contents.store'), [
             'title' => 'Tanpa Video',
             'content' => 'Hanya teks.',
-            'course' => $course->id,
-        ])->assertRedirect(route('content.show'));
+            'course_id' => $course->id,
+        ])->assertRedirect(route('dashboard.contents.index'));
 
         $this->assertDatabaseHas('contents', ['title' => 'Tanpa Video', 'youtube_link' => null]);
     }
@@ -185,7 +185,7 @@ class BugFixTest extends TestCase
         $content = Content::factory()->create(['content' => "Baris pertama\nBaris kedua"]);
 
         $this->actingAs(User::factory()->siswa()->create())
-            ->get(route('show.content', [$content->course, $content]))
+            ->get(route('courses.contents.show', [$content->course, $content]))
             ->assertSee('Baris pertama<br />', false);
     }
 
@@ -200,6 +200,6 @@ class BugFixTest extends TestCase
 
     private function openMaterial(User $user, Content $content): void
     {
-        $this->actingAs($user)->get(route('show.content', [$content->course, $content]))->assertOk();
+        $this->actingAs($user)->get(route('courses.contents.show', [$content->course, $content]))->assertOk();
     }
 }

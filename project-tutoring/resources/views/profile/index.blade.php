@@ -49,20 +49,11 @@
             <div class="col-md-3">
                 <div class="white-background-2 shadow rounded">
                     <h5 class="mb-4">People Associated</h5>
-                    @foreach ($users as $otherUser)
-                        @if ($otherUser->id !== auth()->user()->id) <!-- Memastikan bukan pengguna yang sedang login -->
-                            @if (auth()->user()->role === 'Guru' && $otherUser->role === 'Guru')
-                                <a href=""><img class="profile-2 rounded-circle mb-2" src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="user photo"></a>
-                                <h6><small>{{ $otherUser->nama }}</small></h6>
-                                <p class="text-secondary"><small>{{ $otherUser->role }}</small></p>
-                                <hr>
-                            @elseif (auth()->user()->role === 'Siswa' && $otherUser->role === 'Siswa')
-                                <a href=""><img class="profile-2 rounded-circle mb-2" src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="user photo"></a>
-                                <h6><small>{{ $otherUser->nama }}</small></h6>
-                                <p class="text-secondary"><small>{{ $otherUser->role }}</small></p>
-                                <hr>
-                            @endif
-                        @endif
+                    @foreach ($associatedUsers as $otherUser)
+                        <a href=""><img class="profile-2 rounded-circle mb-2" src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="user photo"></a>
+                        <h6><small>{{ $otherUser->nama }}</small></h6>
+                        <p class="text-secondary"><small>{{ $otherUser->role->value }}</small></p>
+                        <hr>
                     @endforeach
                 </div>
             </div>
@@ -80,7 +71,7 @@
                 </div>
             </div>
         </div>
-        @if(auth()->user() && auth()->user()->role !== 'Siswa')
+        @if(! auth()->user()->isSiswa())
             <div class="row py-3">
                 <div class="col-md-9">
                     <div class="white-background shadow rounded w-100 bg-white">

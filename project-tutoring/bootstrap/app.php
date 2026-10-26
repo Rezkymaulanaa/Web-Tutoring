@@ -1,8 +1,6 @@
 <?php
 
-use App\Http\Middleware\CheckSiswa;
-use App\Http\Middleware\CourseAccessMiddleware;
-use App\Http\Middleware\IsAdmin;
+use App\Http\Middleware\EnsureUserHasRole;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -16,9 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'checkSiswa' => CheckSiswa::class,
-            'course.access' => CourseAccessMiddleware::class,
-            'isAdmin' => IsAdmin::class,
+            'role' => EnsureUserHasRole::class,
         ]);
 
         // User yang sudah login dan membuka halaman tamu (login/registrasi) diarahkan ke beranda.

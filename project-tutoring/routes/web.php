@@ -1,73 +1,48 @@
 <?php
 
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\CourseCatalogController;
+use App\Http\Controllers\Dashboard\ContentController;
+use App\Http\Controllers\Dashboard\CourseController;
+use App\Http\Controllers\Dashboard\UserController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LearningController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\LoginController;
-use App\Http\Controllers\CourseController;
-use App\Http\Controllers\ContentController;
-use App\Http\Controllers\RegisterController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
+// Halaman publik
+Route::get('/', HomeController::class)->name('home');
+Route::get('/courses', [CourseCatalogController::class, 'index'])->name('courses.index');
 
-// Route::get('/', function () {
-//     return view('home');
-// })->name('home');
-Route::get('/', [CourseController::class,'populer'])->name('home');
-
-Route::get('/courses', [CourseController::class, 'kelas'])->name('courses.index');
-Route::get('/courses/search', [CourseController::class, 'search'])->name('course.search');
-
-Route::get('/registrasi', [RegisterController::class, 'index'])->name('registrasi')->middleware('guest');
-Route::post('/registrasi', [RegisterController::class, 'store'])->name('registrasi')->middleware('guest');
-
-Route::get('/login', [LoginController::class, 'index'])->name('login')->middleware('guest');
-// Maksimal 5 percobaan login per menit untuk mencegah tebak-tebakan password (brute force)
-Route::post('/login', [LoginController::class, 'authenticate'])->middleware('guest', 'throttle:5,1');
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-
-Route::get('/dashboard', function () {
-    return view('dashboard/index');
-})->name('dashboard')->middleware('auth', 'checkSiswa');
-
-Route::middleware('auth', 'isAdmin')->group(function () {
-    Route::get('/dashboard/user', [UserController::class, 'index'])->name('user');
-    Route::get('dashboard/user/{user}/edit', [RegisterController::class, 'edit'])->name('edit');
-    Route::put('dashboard/user/{user}', [RegisterController::class, 'update'])->name('update');
-    Route::delete('dashboard/user/{user}', [RegisterController::class, 'destroy'])->name('destroy');
-    Route::get('/dashboard/user/create', [UserController::class, 'create'])->name('create');
-    Route::post('/dashboard/user', [UserController::class, 'store'])->name('store');
-});
-
-Route::middleware('auth', 'course.access')->group(function () {
-    Route::get('dashboard/course', [CourseController::class, 'index'])->name('course.index');
-    Route::get('dashboard/course/create', [CourseController::class, 'create'])->name('createCourse');
-    Route::post('dashboard/course', [CourseController::class, 'store'])->name('storeCourse');
-    Route::put('dashboard/course/{course:id}', [CourseController::class, 'update'])->name('updateCourse');
-    Route::get('dashboard/course/{course:id}/edit', [CourseController::class, 'edit'])->name('editCourse');
-    Route::delete('dashboard/course/{course:id}', [CourseController::class, 'destroy'])->name('destroyCourse');
-});
-
-// URL publik memakai slug, misalnya /content/matematika-dasar/bab-1-bilangan-bulat.
+// URL course & materi memakai slug, misalnya /courses/matematika-dasar/bab-1-bilangan-bulat.
 // scopeBindings() memastikan materi yang dibuka memang milik course di URL tersebut.
-Route::get('/content/{course}', [ContentController::class, 'index'])->name('content.index');
-Route::get('/content/{course}/{content}', [ContentController::class, 'showContent'])->name('show.content')->scopeBindings();
+Route::get('/courses/{course}', [LearningController::class, 'course'])->name('courses.show');
+Route::get('/courses/{course}/{content}', [LearningController::class, 'content'])->name('courses.contents.show')->scopeBindings();
 
-Route::middleware('auth', 'course.access')->group(function () {
-    Route::get('dashboard/content', [ContentController::class, 'show'])->name('content.show');
-    Route::get('dashboard/content/create', [ContentController::class, 'create'])->name('createContent');
-    Route::post('dashboard/content', [ContentController::class, 'store'])->name('storeContent');
-    Route::put('dashboard/content/{id}', [ContentController::class, 'update'])->name('updateContent');
-    Route::get('dashboard/content/{id}/edit', [ContentController::class, 'edit'])->name('editContent');
-    Route::delete('dashboard/content/{id}', [ContentController::class, 'destroy'])->name('destroyContent');
+// Tamu
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [LoginController::class, 'create'])->name('login');
+    // Maksimal 5 percobaan login per menit untuk mencegah tebak-tebakan password (brute force)
+    Route::post('/login', [LoginController::class, 'store'])->middleware('throttle:5,1');
+
+    Route::get('/registrasi', [RegisterController::class, 'create'])->name('register');
+    Route::post('/registrasi', [RegisterController::class, 'store']);
 });
 
-Route::get('/profile', [UserController::class, 'show'])->name('profile.show')->middleware('auth');
+// User yang sudah login
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+
+    // Dashboard untuk Admin & Guru. Dashboard memakai ID (bukan slug) karena slug materi hanya unik per course.
+    Route::middleware('role:Admin,Guru')->group(function () {
+        Route::view('/dashboard', 'dashboard.index')->name('dashboard');
+
+        Route::prefix('dashboard')->name('dashboard.')->group(function () {
+            Route::resource('courses', CourseController::class)->except('show')->scoped(['course' => 'id']);
+            Route::resource('contents', ContentController::class)->except('show')->scoped(['content' => 'id']);
+            Route::resource('users', UserController::class)->except('show')->middleware('role:Admin');
+        });
+    });
+});
