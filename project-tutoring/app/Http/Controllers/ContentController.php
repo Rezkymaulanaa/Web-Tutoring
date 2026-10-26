@@ -11,73 +11,30 @@ use Illuminate\Support\Facades\Gate;
 
 class ContentController extends Controller
 {
-    public function index($courseName)
+    public function index(Course $course)
     {
-        $course = Course::where('course', $courseName)->firstOrFail();
-        // Lakukan operasi lain yang diperlukan untuk menampilkan konten
-
-        $courseName = $course->course;
-        $deskripsi = $course->deskripsi;
         $pengajar = $course->user->nama;
-        $contents = Content::where('course_id', $course->id)->get(); // Mengambil konten untuk course yang dipilih
+        $contents = $course->contents; // Mengambil konten untuk course yang dipilih
 
-        return view('content.index', compact('courseName', 'deskripsi', 'contents', 'pengajar'));
+        return view('content.index', compact('course', 'contents', 'pengajar'));
     }
 
-    public function showContent($courseName, $judulMateri)
+    public function showContent(Course $course, Content $content)
     {
-        $course = Course::where('course', $courseName)->firstOrFail();
-        $contents = Content::where('course_id', $course->id)->get();
+        $contents = $course->contents;
         $pengajar = $course->user->nama;
 
-        if ($judulMateri) {
-            $content = Content::where('course_id', $course->id)
-                ->where('title', $judulMateri)
-                ->firstOrFail();
-        } else {
-            // Jika tidak ada judulMateri yang diberikan, tampilkan materi pertama
-            $content = $contents->first();
-        }
-
-        // Memeriksa apakah konten sudah ada dalam content_history untuk pengguna yang sedang mengaksesnya
+        // Catat riwayat belajar Siswa: tambah baris baru, atau perbarui waktu akses jika sudah pernah dibuka
         if (auth()->check() && auth()->user()->role === 'Siswa') {
-            $userId = auth()->user()->id;
-
-            $visitedContent = DB::table('content_history')
-                ->where('user_id', $userId)
-                ->where('content_id', $content->id)
-                ->first();
-
-            if (!$visitedContent) {
-                // Jika konten belum ada dalam riwayat, tambahkan ke dalam tabel content_history dengan access_at saat ini
-                DB::table('content_history')->insert([
-                    'user_id' => $userId,
-                    'content_id' => $content->id,
-                    'accessed_at' => now()
-                ]);
-            } else {
-                // Jika konten sudah ada dalam riwayat, perbarui access_at ke saat ini tanpa menghitung ulang persentase
-                DB::table('content_history')
-                    ->where('user_id', $userId)
-                    ->where('content_id', $content->id)
-                    ->update(['accessed_at' => now()]);
-            }
+            DB::table('content_history')->updateOrInsert(
+                ['user_id' => auth()->id(), 'content_id' => $content->id],
+                ['accessed_at' => now()],
+            );
         }
 
         $youtubeEmbedLink = $content->youtube_embed_url;
 
-        return view('content.show', compact('course', 'contents', 'content', 'youtubeEmbedLink', 'judulMateri', 'pengajar'));
-    }
-
-    public function tampil($courseName, $judulMateri)
-    {
-        $course = Course::where('course', $courseName)->firstOrFail();
-        $content = Content::where('course_id', $course->id)->where('title', $judulMateri)->firstOrFail();
-        $contents = Content::where('course_id', $course->id)->get();
-
-        $youtubeEmbedLink = $content->youtube_embed_url;
-
-        return view('content.show', compact('course', 'contents', 'content', 'youtubeEmbedLink'));
+        return view('content.show', compact('course', 'contents', 'content', 'youtubeEmbedLink', 'pengajar'));
     }
 
     public function show()
@@ -108,8 +65,7 @@ class ContentController extends Controller
         ]);
 
         // Redirect ke halaman yang sesuai setelah konten berhasil ditambahkan
-        return redirect()->route('content.show', $validatedData['course'])
-                        ->with('success', 'Konten berhasil ditambahkan');
+        return redirect()->route('content.show')->with('success', 'Konten berhasil ditambahkan');
     }
 
     public function edit(Request $request, $contentId)

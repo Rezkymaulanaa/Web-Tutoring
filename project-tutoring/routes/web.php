@@ -26,10 +26,6 @@ Route::get('/', [CourseController::class,'populer'])->name('home');
 Route::get('/courses', [CourseController::class, 'kelas'])->name('courses.index');
 Route::get('/courses/search', [CourseController::class, 'search'])->name('course.search');
 
-Route::get('/login', function () {
-    return view('login');
-})->name('login');
-
 Route::get('/registrasi', [RegisterController::class, 'index'])->name('registrasi')->middleware('guest');
 Route::post('/registrasi', [RegisterController::class, 'store'])->name('registrasi')->middleware('guest');
 
@@ -55,15 +51,15 @@ Route::middleware('auth', 'course.access')->group(function () {
     Route::get('dashboard/course', [CourseController::class, 'index'])->name('course.index');
     Route::get('dashboard/course/create', [CourseController::class, 'create'])->name('createCourse');
     Route::post('dashboard/course', [CourseController::class, 'store'])->name('storeCourse');
-    Route::put('dashboard/course/{course}', [CourseController::class, 'update'])->name('updateCourse');
-    Route::get('dashboard/course/{course}/edit', [CourseController::class, 'edit'])->name('editCourse');
-    Route::delete('dashboard/course/{course}', [CourseController::class, 'destroy'])->name('destroyCourse');
+    Route::put('dashboard/course/{course:id}', [CourseController::class, 'update'])->name('updateCourse');
+    Route::get('dashboard/course/{course:id}/edit', [CourseController::class, 'edit'])->name('editCourse');
+    Route::delete('dashboard/course/{course:id}', [CourseController::class, 'destroy'])->name('destroyCourse');
 });
 
-Route::get('/content/{courseName}', [ContentController::class, 'index'])->name('content.index');
-Route::get('/content/{courseName}/{judulMateri?}', [ContentController::class, 'showContent'])->name('show.content');
-Route::get('/content/{courseName}/{judulMateri}', [ContentController::class, 'tampil'])
-    ->name('tampil.content');
+// URL publik memakai slug, misalnya /content/matematika-dasar/bab-1-bilangan-bulat.
+// scopeBindings() memastikan materi yang dibuka memang milik course di URL tersebut.
+Route::get('/content/{course}', [ContentController::class, 'index'])->name('content.index');
+Route::get('/content/{course}/{content}', [ContentController::class, 'showContent'])->name('show.content')->scopeBindings();
 
 Route::middleware('auth', 'course.access')->group(function () {
     Route::get('dashboard/content', [ContentController::class, 'show'])->name('content.show');

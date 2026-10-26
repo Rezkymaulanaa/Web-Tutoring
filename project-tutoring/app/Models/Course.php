@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasSlug;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -9,7 +10,20 @@ use Illuminate\Database\Eloquent\Model;
 #[Fillable(['course', 'deskripsi', 'start_date', 'end_date', 'user_id'])]
 class Course extends Model
 {
-    use HasFactory;
+    use HasFactory, HasSlug;
+
+    /**
+     * URL course memakai slug, misalnya /content/matematika-dasar.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
+    protected function slugSourceColumn(): string
+    {
+        return 'course';
+    }
 
     public function user()
     {

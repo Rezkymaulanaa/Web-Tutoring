@@ -1,5 +1,6 @@
 @extends('layouts.main')
 
+@push('styles')
 <style>
     .background {
         height: 200px;
@@ -35,6 +36,7 @@
         outline: 5px solid white;
     }
 </style>
+@endpush
 
 @section('container')
     <div class="container py-5">
@@ -47,17 +49,17 @@
             <div class="col-md-3">
                 <div class="white-background-2 shadow rounded">
                     <h5 class="mb-4">People Associated</h5>
-                    @foreach ($users as $users)
-                        @if ($users->id !== auth()->user()->id) <!-- Memastikan bukan pengguna yang sedang login -->
-                            @if (auth()->user()->role === 'Guru' && $users->role === 'Guru')
+                    @foreach ($users as $otherUser)
+                        @if ($otherUser->id !== auth()->user()->id) <!-- Memastikan bukan pengguna yang sedang login -->
+                            @if (auth()->user()->role === 'Guru' && $otherUser->role === 'Guru')
                                 <a href=""><img class="profile-2 rounded-circle mb-2" src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="user photo"></a>
-                                <h6><small>{{ $users->nama }}</small></h6>
-                                <p class="text-secondary"><small>{{ $users->role }}</small></p>
+                                <h6><small>{{ $otherUser->nama }}</small></h6>
+                                <p class="text-secondary"><small>{{ $otherUser->role }}</small></p>
                                 <hr>
-                            @elseif (auth()->user()->role === 'Siswa' && $users->role === 'Siswa')
+                            @elseif (auth()->user()->role === 'Siswa' && $otherUser->role === 'Siswa')
                                 <a href=""><img class="profile-2 rounded-circle mb-2" src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="user photo"></a>
-                                <h6><small>{{ $users->nama }}</small></h6>
-                                <p class="text-secondary"><small>{{ $users->role }}</small></p>
+                                <h6><small>{{ $otherUser->nama }}</small></h6>
+                                <p class="text-secondary"><small>{{ $otherUser->role }}</small></p>
                                 <hr>
                             @endif
                         @endif

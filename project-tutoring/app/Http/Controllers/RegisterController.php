@@ -61,6 +61,11 @@ class RegisterController extends Controller
     {
         Gate::authorize('delete', $user);
 
+        // Course tidak ikut terhapus otomatis, supaya materi milik Guru tidak hilang tanpa sengaja
+        if ($user->courses()->exists()) {
+            return back()->withErrors(['error' => "{$user->nama} masih memiliki course. Hapus course-nya terlebih dahulu."]);
+        }
+
         $user->delete();
 
         return redirect('/dashboard/user')->with('success', 'Data user berhasil dihapus');

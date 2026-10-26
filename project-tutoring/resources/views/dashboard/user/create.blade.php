@@ -55,7 +55,7 @@
             <div class="input-group mb-3">
                 <label class="input-group-text" for="role"><i class="bi bi-person-fill fs-5"></i></label>
                 <select name="role" class="form-select @error('role') is-invalid @enderror" id="role" >
-                    <option selected>Choose...</option>
+                    <option selected value="">Choose...</option>
                     <option value="Guru">Guru</option>
                     <option value="Siswa">Siswa</option>
                 </select>

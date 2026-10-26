@@ -1,22 +1,24 @@
 @extends('layouts.main')
 
+@push('styles')
 <style>
     .heading {
         color: #00006b;
     }
 </style>
+@endpush
 
 @section('container')
     <div class="container py-5 my-4">
         <div class="row">
             <div class="col-md-8">
-                <h2 class="heading">{{ $courseName }}</h2>
-                <p>{{ $deskripsi }}</p>
+                <h2 class="heading">{{ $course->course }}</h2>
+                <p>{{ $course->deskripsi }}</p>
             </div>
             <div class="col-md-4 justify-content-end d-flex">
                 <div class="card" style="width: 20rem;height:12rem;">
                     <div class="card-body p-4">
-                      <p class="card-title d-flex fs-6">Kelas : <span class="ms-auto fw-medium">{{ $courseName }}</span></p>
+                      <p class="card-title d-flex fs-6">Kelas : <span class="ms-auto fw-medium">{{ $course->course }}</span></p>
                       <hr>
                       <p class="card-text d-flex fs-6">Pengajar : <span class="ms-auto fw-medium">{{ $pengajar }}</span></p>
                       @php
@@ -25,7 +27,7 @@
                       @endphp
 
                       @if($hasContent)
-                          <a href="{{ route('show.content', ['courseName' => $courseName, 'judulMateri' => $firstContent->title]) }}" class="btn btn-warning text-white px-5 py-1 d-flex justify-content-center mb-2">Belajar</a>
+                          <a href="{{ route('show.content', [$course, $firstContent]) }}" class="btn btn-warning text-white px-5 py-1 d-flex justify-content-center mb-2">Belajar</a>
                       @else
                           <button class="btn btn-secondary text-white py-1 w-100 d-flex justify-content-center mb-2" disabled>Tidak ada materi</button>
                       @endif

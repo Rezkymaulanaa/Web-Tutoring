@@ -144,10 +144,7 @@ class SecurityTest extends TestCase
         ]);
 
         $this->actingAs(User::factory()->siswa()->create())
-            ->get(route('show.content', [
-                'courseName' => $content->course->course,
-                'judulMateri' => $content->title,
-            ]))
+            ->get(route('show.content', [$content->course, $content]))
             ->assertOk()
             ->assertSee('https://www.youtube.com/embed/dQw4w9WgXcQ');
     }

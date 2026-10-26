@@ -1,5 +1,6 @@
 @extends('layouts.main')
 
+@push('styles')
 <style>
     .back {
         right: 9%;
@@ -7,6 +8,7 @@
         transform: translateY(170px)
     }
 </style>
+@endpush
 
 @section('container')
     <div class="container my-5">
@@ -24,12 +26,12 @@
                       <p class="card-text d-flex fs-6">Pengajar : <span class="ms-auto fw-medium">{{ $pengajar }}</span></p>
                       <p class="card-text d-flex fs-6">Daftar Materi : </p>
                       @foreach ($contents as $singleContent)
-                        @if ($singleContent->title === $judulMateri)
-                            <a href="{{ route('tampil.content', ['courseName' => $course->course, 'judulMateri' => $singleContent->title]) }}" class="btn btn-warning shadow-sm text-white px-3 py-1 d-flex justify-content-start mb-2">
+                        @if ($singleContent->is($content))
+                            <a href="{{ route('show.content', [$course, $singleContent]) }}" class="btn btn-warning shadow-sm text-white px-3 py-1 d-flex justify-content-start mb-2">
                                 {{ $singleContent->title }}
                             </a>
                         @else
-                            <a href="{{ route('tampil.content', ['courseName' => $course->course, 'judulMateri' => $singleContent->title]) }}" class="btn btn-light text-dark px-3 py-1 d-flex justify-content-start mb-2">
+                            <a href="{{ route('show.content', [$course, $singleContent]) }}" class="btn btn-light text-dark px-3 py-1 d-flex justify-content-start mb-2">
                                 {{ $singleContent->title }}
                             </a>
                         @endif
@@ -43,11 +45,11 @@
             <div class="col-md-8">
                 <hr>
                 <h1 class="mt-5 mb-3">{{ $content->title }}</h1>
-                <p>{{ $content->content }}</p>
+                <p>{!! nl2br(e($content->content)) !!}</p>
             </div>
             <div class="col-md-4">
                 <div class="back position-absolute d-flex rounded-circle" >
-                    <a href="{{ route('content.index', ['courseName' => $course->course]) }}"><i class="bi bi-arrow-left-circle-fill text-warning fs-1 "></i></a>
+                    <a href="{{ route('content.index', $course) }}"><i class="bi bi-arrow-left-circle-fill text-warning fs-1 "></i></a>
                 </div>
             </div>
         </div>

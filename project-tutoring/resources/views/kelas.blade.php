@@ -57,7 +57,7 @@
                       <p class="card-text">{{ Str::limit($course->deskripsi, 200) }}</p>
                       <h6 class="card-title mb-3"><small>Pengajar: {{ $course->pengajar_nama }}</small></h6>
                       @auth
-                        <a href="{{ route('content.index', ['courseName' => $course->course]) }}" class="btn btn-warning text-white w-25">Lihat</a>
+                        <a href="{{ route('content.index', $course->slug) }}" class="btn btn-warning text-white w-25">Lihat</a>
                         <div class="kontak d-flex position-absolute rounded-circle shadow">
                             <a class="text-decoration-none mx-auto my-auto" href="https://api.whatsapp.com/send/?phone=[dihapus]&text=Halo Kak&type=phone_number&app_absent=0" target="_blank"><i class="bi bi-whatsapp fs-5 text-white"></i></a>
                         </div>
