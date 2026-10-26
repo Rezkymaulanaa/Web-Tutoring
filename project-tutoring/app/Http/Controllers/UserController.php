@@ -6,6 +6,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
 class UserController extends Controller
 {
@@ -35,8 +37,8 @@ class UserController extends Controller
             'nama' => 'required|max:255',
             'username' => 'required|min:5|max:255|unique:users',
             'email' => 'required|email:dns|unique:users',
-            'role' => 'required|string',
-            'password' => 'required|min:8|max:255'
+            'role' => ['required', Rule::in(User::ASSIGNABLE_ROLES)],
+            'password' => ['required', 'max:255', Password::defaults()],
         ]);
 
         $validatedData['password'] = Hash::make($validatedData['password']);

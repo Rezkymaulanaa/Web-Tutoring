@@ -100,7 +100,7 @@ class CourseManagementTest extends TestCase
 
         $this->actingAs(User::factory()->guru()->create())
             ->get(route('editCourse', $course))
-            ->assertSessionHasErrors('error');
+            ->assertForbidden();
     }
 
     public function test_guru_can_delete_own_course(): void
@@ -120,7 +120,7 @@ class CourseManagementTest extends TestCase
 
         $this->actingAs(User::factory()->guru()->create())
             ->delete(route('destroyCourse', $course))
-            ->assertSessionHasErrors('error');
+            ->assertForbidden();
 
         $this->assertModelExists($course);
     }

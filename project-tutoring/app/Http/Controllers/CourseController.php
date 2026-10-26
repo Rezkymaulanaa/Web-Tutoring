@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class CourseController extends Controller
 {
@@ -50,10 +51,7 @@ class CourseController extends Controller
         $course = Course::findOrFail($id);
         $user = $request->user();
 
-        // Periksa apakah pengguna adalah admin atau guru yang membuat course
-        if (!$user || !($user->isAdmin() || $course->user_id === $user->id)) {
-            return back()->withErrors(['error' => 'Anda tidak memiliki izin untuk mengedit course dari pengajar lain.']);
-        }
+        Gate::authorize('update', $course);
 
         return view('dashboard.course.edit', compact('course', 'user'));
     }
@@ -61,6 +59,8 @@ class CourseController extends Controller
     public function update(Request $request, $id)
     {
         $course = Course::findOrFail($id);
+
+        Gate::authorize('update', $course);
 
         $validatedData = $request->validate([
             'course' => 'required|string|max:255',
@@ -77,12 +77,8 @@ class CourseController extends Controller
     public function destroy(Request $request, $id)
     {
         $course = Course::findOrFail($id);
-        $user = $request->user();
 
-        // Periksa apakah pengguna adalah admin atau guru yang membuat course
-        if (!$user || !($user->isAdmin() || $course->user_id === $user->id)) {
-            return back()->withErrors(['error' => 'Anda tidak memiliki izin untuk menghapus course dari pengajar lain.']);
-        }
+        Gate::authorize('delete', $course);
 
         $course->delete();
 

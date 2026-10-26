@@ -44,7 +44,7 @@ class LearningTest extends TestCase
 
     public function test_material_page_shows_content_and_embedded_video(): void
     {
-        $content = Content::factory()->create(['youtube_link' => 'https://youtu.be/abc123']);
+        $content = Content::factory()->create(['youtube_link' => 'https://youtu.be/abcDEF12345']);
 
         $this->actingAs(User::factory()->siswa()->create())
             ->get(route('show.content', [
@@ -53,7 +53,7 @@ class LearningTest extends TestCase
             ]))
             ->assertOk()
             ->assertSee($content->title)
-            ->assertSee('https://www.youtube.com/embed/abc123');
+            ->assertSee('https://www.youtube.com/embed/abcDEF12345');
     }
 
     public function test_opening_material_records_history_for_siswa(): void

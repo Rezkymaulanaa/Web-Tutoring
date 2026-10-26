@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Models\Course;
 use App\Models\Content;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class ContentController extends Controller
 {
-    public function index($courseName) 
+    public function index($courseName)
     {
         $course = Course::where('course', $courseName)->firstOrFail();
         // Lakukan operasi lain yang diperlukan untuk menampilkan konten
@@ -64,9 +64,7 @@ class ContentController extends Controller
             }
         }
 
-        // Ubah tautan singkat YouTube ke tautan lengkap untuk penggunaan di dalam iframe
-        $youtubeLink = $content->youtube_link;
-        $youtubeEmbedLink = str_replace('https://youtu.be/', 'https://www.youtube.com/embed/', $youtubeLink);
+        $youtubeEmbedLink = $content->youtube_embed_url;
 
         return view('content.show', compact('course', 'contents', 'content', 'youtubeEmbedLink', 'judulMateri', 'pengajar'));
     }
@@ -77,9 +75,7 @@ class ContentController extends Controller
         $content = Content::where('course_id', $course->id)->where('title', $judulMateri)->firstOrFail();
         $contents = Content::where('course_id', $course->id)->get();
 
-        // Ubah tautan singkat YouTube ke tautan lengkap untuk penggunaan di dalam iframe
-        $youtubeLink = $content->youtube_link;
-        $youtubeEmbedLink = str_replace('https://youtu.be/', 'https://www.youtube.com/embed/', $youtubeLink);
+        $youtubeEmbedLink = $content->youtube_embed_url;
 
         return view('content.show', compact('course', 'contents', 'content', 'youtubeEmbedLink'));
     }
@@ -98,91 +94,80 @@ class ContentController extends Controller
 
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
-            'link' => 'nullable|url',
-            'course' => 'required|exists:courses,id'
+        $validatedData = $request->validate($this->rules());
+
+        // Materi hanya boleh ditambahkan ke course milik sendiri (kecuali Admin)
+        Gate::authorize('update', Course::findOrFail($validatedData['course']));
+
+        Content::create([
+            'title' => $validatedData['title'],
+            'content' => $validatedData['content'],
+            'youtube_link' => $validatedData['link'] ?? null,
+            'course_id' => $validatedData['course'],
+            'user_id' => Auth::id(),
         ]);
 
-        // Periksa apakah 'link' atau 'youtube_link' diisi, lalu sesuaikan ke dalam $validatedData
-        if ($request->has('link')) {
-            $validatedData['youtube_link'] = $request->input('link');
-        }
-
-        // Tentukan 'course_id' berdasarkan input dari form
-        $validatedData['course_id'] = $validatedData['course'];
-
-        // Dapatkan ID pengguna yang sedang masuk
-        $validatedData['user_id'] = Auth::id();
-
-        // Buat konten baru dengan data yang sudah divalidasi
-        Content::create($validatedData);
-
         // Redirect ke halaman yang sesuai setelah konten berhasil ditambahkan
-        return redirect()->route('content.show', $validatedData['course_id'])
+        return redirect()->route('content.show', $validatedData['course'])
                         ->with('success', 'Konten berhasil ditambahkan');
     }
 
-    public function edit(Request $request, $contentId) {
+    public function edit(Request $request, $contentId)
+    {
         $content = Content::findOrFail($contentId);
         $user = $request->user();
-    
-        // Mendapatkan daftar kursus yang dimiliki oleh pengguna yang sedang login
-        $userCourses = $user->courses->pluck('id')->toArray();
-    
-        // Memuat konten hanya jika pengguna adalah admin atau memiliki akses ke kursus yang terkait dengan konten
-        if ($user && ($user->isAdmin() || in_array($content->course_id, $userCourses))) {
-            // Memuat daftar kursus yang dimiliki pengguna untuk opsi select
-            $courses = Course::whereIn('id', $userCourses)->get();
-            
-            return view('dashboard.content.edit', compact('content', 'courses'));
-        } else {
-            return back()->withErrors(['error' => 'Anda tidak memiliki izin untuk mengedit konten ini.']);
-        }
+
+        Gate::authorize('update', $content);
+
+        // Pilihan course: Admin melihat semua course, Guru hanya course miliknya
+        $courses = $user->isAdmin() ? Course::all() : $user->courses;
+
+        return view('dashboard.content.edit', compact('content', 'courses'));
     }
-    
-    
 
     public function update(Request $request, $id)
     {
-        $content = Content::find($id);
+        $content = Content::findOrFail($id);
 
-        $validatedData = $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
-            'link' => 'nullable|url',
-            'course' => 'required|exists:courses,id'
+        Gate::authorize('update', $content);
+
+        $validatedData = $request->validate($this->rules());
+
+        // Jika materi dipindah ke course lain, course tujuan juga harus milik sendiri
+        Gate::authorize('update', Course::findOrFail($validatedData['course']));
+
+        // user_id tidak diubah, supaya penulis asli materi tetap tercatat
+        $content->update([
+            'title' => $validatedData['title'],
+            'content' => $validatedData['content'],
+            'youtube_link' => $validatedData['link'] ?? null,
+            'course_id' => $validatedData['course'],
         ]);
-
-         // Periksa apakah 'link' atau 'youtube_link' diisi, lalu sesuaikan ke dalam $validatedData
-         if ($request->has('link')) {
-            $validatedData['youtube_link'] = $request->input('link');
-        }
-
-        // Tentukan 'course_id' berdasarkan input dari form
-        $validatedData['course_id'] = $validatedData['course'];
-
-        // Dapatkan ID pengguna yang sedang masuk
-        $validatedData['user_id'] = Auth::id();
-
-        $content->update($validatedData);
 
         return redirect()->route('content.show')->with('success', 'Konten berhasil diperbarui');
     }
 
-    public function destroy(Request $request, $id)
-{
-    $content = Content::find($id);
-    $user = $request->user();
+    public function destroy($id)
+    {
+        $content = Content::findOrFail($id);
 
-    // Check if the user is an admin or the content owner before deleting
-    if ($user && ($user->isAdmin() || $user->courses->contains('id', $content->course->id))) {
+        Gate::authorize('delete', $content);
+
         $content->delete();
-        return redirect()->route('content.show')->with('success', 'Materi berhasil dihapus');
-    } else {
-        return back()->withErrors(['error' => 'Anda tidak memiliki izin untuk menghapus materi dari pengajar lain.']);
-    }
-}
 
+        return redirect()->route('content.show')->with('success', 'Materi berhasil dihapus');
+    }
+
+    /**
+     * Aturan validasi untuk menyimpan dan memperbarui materi.
+     */
+    private function rules(): array
+    {
+        return [
+            'title' => ['required', 'string', 'max:255'],
+            'content' => ['required', 'string'],
+            'link' => ['nullable', 'url', 'regex:'.Content::YOUTUBE_PATTERN],
+            'course' => ['required', 'exists:courses,id'],
+        ];
+    }
 }

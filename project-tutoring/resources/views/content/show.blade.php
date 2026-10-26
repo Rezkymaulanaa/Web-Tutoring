@@ -12,7 +12,9 @@
     <div class="container my-5">
         <div class="row mb-5">
             <div class="col-md-8">
-                <iframe class="rounded shadow" width="750" height="450" src="{{ $youtubeEmbedLink }}" frameborder="0" allowfullscreen></iframe>
+                @if ($youtubeEmbedLink)
+                    <iframe class="rounded shadow" width="750" height="450" src="{{ $youtubeEmbedLink }}" frameborder="0" allowfullscreen></iframe>
+                @endif
             </div>
             <div class="col-md-4 justify-content-end d-flex">
                 <div class="card" style="width: 20rem;">

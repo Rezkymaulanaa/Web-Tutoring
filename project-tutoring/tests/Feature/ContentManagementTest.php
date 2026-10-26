@@ -42,7 +42,7 @@ class ContentManagementTest extends TestCase
         $this->actingAs($guru)->post(route('storeContent'), [
             'title' => 'Hukum Newton 1',
             'content' => 'Benda diam tetap diam.',
-            'link' => 'https://youtu.be/abc123',
+            'link' => 'https://youtu.be/abcDEF12345',
             'course' => $course->id,
         ])->assertRedirect();
 
@@ -50,7 +50,7 @@ class ContentManagementTest extends TestCase
             'title' => 'Hukum Newton 1',
             'course_id' => $course->id,
             'user_id' => $guru->id,
-            'youtube_link' => 'https://youtu.be/abc123',
+            'youtube_link' => 'https://youtu.be/abcDEF12345',
         ]);
     }
 
@@ -75,7 +75,7 @@ class ContentManagementTest extends TestCase
         $this->actingAs($guru)->put(route('updateContent', ['id' => $content->id]), [
             'title' => 'Judul Baru',
             'content' => 'Isi baru.',
-            'link' => 'https://youtu.be/xyz789',
+            'link' => 'https://youtu.be/xyzXYZ78901',
             'course' => $content->course_id,
         ])->assertRedirect(route('content.show'));
 
@@ -88,7 +88,7 @@ class ContentManagementTest extends TestCase
 
         $this->actingAs(User::factory()->guru()->create())
             ->get(route('editContent', ['id' => $content->id]))
-            ->assertSessionHasErrors('error');
+            ->assertForbidden();
     }
 
     public function test_guru_can_delete_own_content(): void
@@ -108,7 +108,7 @@ class ContentManagementTest extends TestCase
 
         $this->actingAs(User::factory()->guru()->create())
             ->delete(route('destroyContent', ['id' => $content->id]))
-            ->assertSessionHasErrors('error');
+            ->assertForbidden();
 
         $this->assertModelExists($content);
     }

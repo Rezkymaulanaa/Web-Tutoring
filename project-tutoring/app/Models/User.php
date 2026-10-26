@@ -4,11 +4,13 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+#[Fillable(['nama', 'username', 'email', 'role', 'password'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -16,11 +18,10 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array<int, string>
+     * Role yang boleh dipilih saat registrasi atau oleh Admin.
+     * Akun Admin hanya dibuat lewat seeder.
      */
-    protected $guarded = ['id'];
+    public const ASSIGNABLE_ROLES = ['Guru', 'Siswa'];
 
     public function isAdmin()
     {

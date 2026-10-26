@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
 class RegisterController extends Controller
 {
@@ -20,8 +22,8 @@ class RegisterController extends Controller
             'nama' => 'required|max:255',
             'username' => 'required|min:5|max:255|unique:users',
             'email' => 'required|email:dns|unique:users',
-            'role' => 'required|string',
-            'password' => 'required|min:8|max:255'
+            'role' => ['required', Rule::in(User::ASSIGNABLE_ROLES)],
+            'password' => ['required', 'max:255', Password::defaults()],
         ]);
 
         $validatedData['password'] = Hash::make($validatedData['password']);
@@ -33,16 +35,20 @@ class RegisterController extends Controller
 
     public function edit(User $user)
     {
+        Gate::authorize('update', $user);
+
         return view('dashboard.user.edit', compact('user'));
     }
 
     public function update(Request $request, User $user)
     {
+        Gate::authorize('update', $user);
+
         $validatedData = $request->validate([
             'nama' => 'required|max:255',
             'username' => 'required|min:5|max:255|unique:users,username,' . $user->id,
             'email' => 'required|email:dns|unique:users,email,' . $user->id,
-            'role' => 'required|string',
+            'role' => ['required', Rule::in(User::ASSIGNABLE_ROLES)],
         ]);
 
         $user->update($validatedData);
@@ -53,6 +59,8 @@ class RegisterController extends Controller
 
     public function destroy(User $user)
     {
+        Gate::authorize('delete', $user);
+
         $user->delete();
 
         return redirect('/dashboard/user')->with('success', 'Data user berhasil dihapus');

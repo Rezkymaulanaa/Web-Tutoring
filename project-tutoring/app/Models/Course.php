@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+#[Fillable(['course', 'deskripsi', 'start_date', 'end_date', 'user_id'])]
 class Course extends Model
 {
     use HasFactory;
-
-    protected $guarded = ['id'];
 
     public function user()
     {

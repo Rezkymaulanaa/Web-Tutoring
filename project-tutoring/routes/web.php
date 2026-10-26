@@ -34,14 +34,15 @@ Route::get('/registrasi', [RegisterController::class, 'index'])->name('registras
 Route::post('/registrasi', [RegisterController::class, 'store'])->name('registrasi')->middleware('guest');
 
 Route::get('/login', [LoginController::class, 'index'])->name('login')->middleware('guest');
-Route::post('/login', [LoginController::class, 'authenticate']);
+// Maksimal 5 percobaan login per menit untuk mencegah tebak-tebakan password (brute force)
+Route::post('/login', [LoginController::class, 'authenticate'])->middleware('guest', 'throttle:5,1');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::get('/dashboard', function () {
     return view('dashboard/index');
 })->name('dashboard')->middleware('auth', 'checkSiswa');
 
-Route::middleware('isAdmin')->group(function () {
+Route::middleware('auth', 'isAdmin')->group(function () {
     Route::get('/dashboard/user', [UserController::class, 'index'])->name('user');
     Route::get('dashboard/user/{user}/edit', [RegisterController::class, 'edit'])->name('edit');
     Route::put('dashboard/user/{user}', [RegisterController::class, 'update'])->name('update');
@@ -50,7 +51,7 @@ Route::middleware('isAdmin')->group(function () {
     Route::post('/dashboard/user', [UserController::class, 'store'])->name('store');
 });
 
-Route::middleware('course.access')->group(function () {
+Route::middleware('auth', 'course.access')->group(function () {
     Route::get('dashboard/course', [CourseController::class, 'index'])->name('course.index');
     Route::get('dashboard/course/create', [CourseController::class, 'create'])->name('createCourse');
     Route::post('dashboard/course', [CourseController::class, 'store'])->name('storeCourse');
@@ -64,7 +65,7 @@ Route::get('/content/{courseName}/{judulMateri?}', [ContentController::class, 's
 Route::get('/content/{courseName}/{judulMateri}', [ContentController::class, 'tampil'])
     ->name('tampil.content');
 
-Route::middleware('course.access')->group(function () {
+Route::middleware('auth', 'course.access')->group(function () {
     Route::get('dashboard/content', [ContentController::class, 'show'])->name('content.show');
     Route::get('dashboard/content/create', [ContentController::class, 'create'])->name('createContent');
     Route::post('dashboard/content', [ContentController::class, 'store'])->name('storeContent');
@@ -73,4 +74,4 @@ Route::middleware('course.access')->group(function () {
     Route::delete('dashboard/content/{id}', [ContentController::class, 'destroy'])->name('destroyContent');
 });
 
-Route::get('/profile', [UserController::class, 'show'])->name('profile.show');
+Route::get('/profile', [UserController::class, 'show'])->name('profile.show')->middleware('auth');
