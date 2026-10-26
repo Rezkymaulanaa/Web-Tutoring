@@ -1,12 +1,12 @@
 {{-- Form bersama untuk tambah & edit materi --}}
 @php($content ??= null)
 
-<p class="text-sm text-slate-600">Isian bertanda <span class="text-red-700">*</span> wajib diisi.</p>
+<p class="text-sm text-ink-600">Isian bertanda <span class="text-danger">*</span> wajib diisi.</p>
 
 @if ($courses->isEmpty())
     <x-empty-state title="Anda belum punya course" icon="heroicon-o-book-open">
         Materi harus berada di dalam course.
-        <a href="{{ route('dashboard.courses.create') }}" class="font-medium text-brand-700 hover:underline">Buat course dulu</a>.
+        <a href="{{ route('dashboard.courses.create') }}" class="font-medium text-ink-900 hover:underline">Buat course dulu</a>.
     </x-empty-state>
 @endif
 

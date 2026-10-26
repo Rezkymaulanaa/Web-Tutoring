@@ -13,7 +13,7 @@
            @if ($invalid) aria-invalid="true" @endif
            @if ($describedBy) aria-describedby="{{ $describedBy }}" @endif
            {{ $attributes->except('class')->class([
-               'block w-full rounded-lg border-slate-500 shadow-sm placeholder:text-slate-500 focus:border-brand-600 focus:ring-brand-600 sm:text-sm',
-               'border-red-600 pr-10' => $invalid,
+               'block w-full rounded-md border-ink-500 placeholder:text-ink-500 focus:border-ink-900 focus:ring-ink-900 sm:text-sm',
+               'border-danger pr-10' => $invalid,
            ]) }}>
 </x-form.field>

@@ -19,15 +19,15 @@ class DashboardController extends Controller
         $user = $request->user();
 
         $stats = $user->isAdmin() ? [
-            ['label' => 'Siswa', 'value' => User::where('role', UserRole::Siswa)->count(), 'icon' => 'heroicon-o-academic-cap'],
-            ['label' => 'Guru', 'value' => User::where('role', UserRole::Guru)->count(), 'icon' => 'heroicon-o-presentation-chart-bar'],
-            ['label' => 'Course', 'value' => Course::count(), 'icon' => 'heroicon-o-book-open'],
-            ['label' => 'Materi', 'value' => Content::count(), 'icon' => 'heroicon-o-document-text'],
+            ['label' => 'Siswa', 'value' => User::where('role', UserRole::Siswa)->count()],
+            ['label' => 'Guru', 'value' => User::where('role', UserRole::Guru)->count()],
+            ['label' => 'Course', 'value' => Course::count()],
+            ['label' => 'Materi', 'value' => Content::count()],
         ] : [
-            ['label' => 'Course saya', 'value' => $user->courses()->count(), 'icon' => 'heroicon-o-book-open'],
-            ['label' => 'Materi saya', 'value' => Content::whereIn('course_id', $user->courses()->select('id'))->count(), 'icon' => 'heroicon-o-document-text'],
-            ['label' => 'Siswa yang belajar', 'value' => $this->studentCount($user), 'icon' => 'heroicon-o-academic-cap'],
-            ['label' => 'Materi dibuka', 'value' => $this->viewCount($user), 'icon' => 'heroicon-o-eye'],
+            ['label' => 'Course saya', 'value' => $user->courses()->count()],
+            ['label' => 'Materi saya', 'value' => Content::whereIn('course_id', $user->courses()->select('id'))->count()],
+            ['label' => 'Siswa yang belajar', 'value' => $this->studentCount($user)],
+            ['label' => 'Materi dibuka', 'value' => $this->viewCount($user)],
         ];
 
         $recentCourses = Course::with('user')

@@ -1,10 +1,10 @@
 <x-layouts.app title="Masuk">
-    <x-auth-card title="Masuk ke EduLearn" subtitle="Selamat datang kembali! Masuk untuk melanjutkan belajar.">
+    <x-auth-card title="Masuk ke akunmu" subtitle="Lanjutkan dari materi terakhir yang kamu buka. Progres belajarmu tersimpan otomatis.">
         <x-flash class="mb-6" />
 
         @if (session('loginError'))
-            <div role="alert" class="mb-6 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-900">
-                <x-heroicon-s-exclamation-triangle class="size-5 shrink-0 text-red-700" aria-hidden="true" />
+            <div role="alert" class="mb-6 flex items-start gap-3 border-l-4 border-danger bg-danger-soft px-4 py-3 text-sm text-ink-900">
+                <x-heroicon-s-exclamation-triangle class="mt-0.5 size-5 shrink-0 text-danger" aria-hidden="true" />
                 {{ session('loginError') }}
             </div>
         @endif
@@ -17,9 +17,9 @@
 
             <x-form.password autocomplete="current-password" />
 
-            <label class="flex items-center gap-2 text-sm text-slate-700">
+            <label class="flex items-center gap-2 text-sm text-ink-700">
                 <input type="checkbox" name="remember" value="1" @checked(old('remember'))
-                       class="size-4 rounded border-slate-500 text-brand-700 focus:ring-brand-600">
+                       class="size-4 rounded border-ink-500 text-ink-900 focus:ring-ink-900">
                 Ingat saya di perangkat ini
             </label>
 
@@ -27,7 +27,7 @@
         </form>
 
         <x-slot:footer>
-            Belum punya akun? <a href="{{ route('register') }}" class="font-semibold text-brand-700 hover:underline">Daftar gratis</a>
+            Belum punya akun? <a href="{{ route('register') }}" class="link">Daftar gratis</a>
         </x-slot:footer>
     </x-auth-card>
 </x-layouts.app>

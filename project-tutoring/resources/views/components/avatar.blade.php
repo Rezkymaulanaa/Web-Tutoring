@@ -10,8 +10,8 @@
 @endphp
 
 <span aria-hidden="true" {{ $attributes->class([
-    'inline-flex shrink-0 items-center justify-center rounded-full bg-brand-100 font-semibold text-brand-800',
-    'size-8 text-xs' => $size === 'sm',
+    'inline-flex shrink-0 items-center justify-center rounded-full bg-marigold-100 font-display font-semibold text-ink-900',
+    'size-7 text-[11px]' => $size === 'sm',
     'size-10 text-sm' => $size === 'md',
     'size-20 text-2xl' => $size === 'lg',
 ]) }}>{{ $initials }}</span>

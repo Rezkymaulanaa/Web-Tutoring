@@ -10,8 +10,8 @@
     <link rel="icon" type="image/png" href="{{ asset('images/eduLearn-logo.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="flex min-h-full flex-col bg-slate-50 text-slate-900 antialiased">
-    <a href="#main" class="sr-only z-50 rounded-md bg-white px-4 py-2 font-medium text-brand-700 shadow focus:not-sr-only focus:fixed focus:top-3 focus:left-3">
+<body class="flex min-h-full flex-col bg-paper font-sans text-ink-900 antialiased">
+    <a href="#main" class="sr-only z-50 rounded-md bg-ink-900 px-4 py-2 font-medium text-paper focus:not-sr-only focus:fixed focus:top-3 focus:left-3">
         Lewati ke konten utama
     </a>
 

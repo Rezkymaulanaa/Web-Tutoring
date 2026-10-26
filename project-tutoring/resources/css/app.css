@@ -1,36 +1,51 @@
+@import '@fontsource-variable/fraunces/opsz.css';
+@import '@fontsource-variable/fraunces/opsz-italic.css';
+@import '@fontsource-variable/public-sans/wght.css';
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
 
 @source '../../storage/framework/views/*.php';
 
 /*
- * Design token EduLearn.
- * Semua pasangan warna teks/latar yang dipakai sudah dicek kontrasnya
- * (minimal 4.5:1 untuk teks biasa sesuai WCAG 2.2 AA):
- *   brand-700 di atas putih ........ 6.7:1   (tombol utama, link)
- *   slate-600 di atas putih ........ 7.6:1   (teks sekunder)
- *   slate-900 di atas accent-400 ... 11.4:1  (badge/sorotan)
- *   red-700 di atas putih .......... 6.5:1   (pesan error)
+ * Design token EduLearn: "silabus editorial".
+ * Diambil dari identitas lama EduLearn: navy footer (#112849) sebagai tinta,
+ * kuning tombol lama sebagai aksen, dan biru logo (#38b6ff) khusus dekorasi.
+ * Kontras setiap pasangan teks/latar sudah dicek (lihat ringkasan di README).
  */
 @theme {
-    --font-sans: 'Segoe UI', ui-sans-serif, system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+    --font-sans: 'Public Sans Variable', ui-sans-serif, system-ui, 'Segoe UI', sans-serif;
+    --font-display: 'Fraunces Variable', ui-serif, Georgia, 'Times New Roman', serif;
 
-    --color-brand-50: #eff6ff;
-    --color-brand-100: #dbeafe;
-    --color-brand-200: #bfdbfe;
-    --color-brand-500: #3b82f6;
-    --color-brand-600: #2563eb;
-    --color-brand-700: #1d4ed8;
-    --color-brand-800: #1e40af;
-    --color-brand-900: #1e3a8a;
-    --color-brand-950: #112849;
+    /* Tinta: teks utama, tombol utama, permukaan gelap */
+    --color-ink-50: #f1f3f7;
+    --color-ink-100: #e2e6ee;
+    --color-ink-300: #a9b1c2;
+    --color-ink-500: #6b7385;
+    --color-ink-600: #535b6d;
+    --color-ink-700: #3b4458;
+    --color-ink-800: #22304f;
+    --color-ink-900: #14213d;
+    --color-ink-950: #0c162b;
 
-    /* Biru muda dari logo EduLearn, hanya untuk dekorasi (kontrasnya terlalu rendah untuk teks). */
-    --color-logo: #38b6ff;
+    /* Kertas: latar halaman & kartu */
+    --color-paper: #f6f3ec;
+    --color-paper-card: #fffdf8;
+    --color-rule: #e3ddd0;
 
-    --color-accent-100: #fef3c7;
-    --color-accent-400: #fbbf24;
-    --color-accent-500: #f59e0b;
+    /* Aksen: kuning EduLearn (selalu dipasangkan dengan teks tinta) */
+    --color-marigold-100: #fbefd4;
+    --color-marigold-300: #f5cd7a;
+    --color-marigold-400: #f0b03f;
+    --color-marigold-500: #e09a1f;
+
+    /* Biru logo, hanya untuk dekorasi (kontras terlalu rendah untuk teks) */
+    --color-sky: #38b6ff;
+
+    /* Status */
+    --color-success: #1d6b47;
+    --color-success-soft: #e5f2ea;
+    --color-danger: #b42318;
+    --color-danger-soft: #fbeae8;
 }
 
 @layer base {
@@ -38,14 +53,28 @@
         scroll-padding-top: 5rem;
     }
 
-    /* Indikator fokus keyboard yang selalu terlihat (WCAG 2.4.7 & 2.4.11) */
-    :focus-visible {
-        outline: 3px solid var(--color-brand-600);
-        outline-offset: 2px;
-        border-radius: 0.25rem;
+    /*
+     * Angka sejajar & sama lebar untuk statistik dan kolom tabel.
+     * Fraunces memakai angka gaya lama (naik-turun) secara bawaan; lining-nums membuatnya rata.
+     */
+    .tabular {
+        font-variant-numeric: lining-nums tabular-nums;
     }
 
-    /* Hormati pengguna yang memilih mengurangi animasi (WCAG 2.3.3) */
+    /*
+     * Indikator fokus keyboard yang selalu terlihat (WCAG 2.4.7 & 2.4.11).
+     * Tinta di permukaan terang (14:1), kuning di permukaan gelap .surface-dark (9:1).
+     */
+    :focus-visible {
+        outline: 3px solid var(--color-ink-900);
+        outline-offset: 2px;
+        border-radius: 2px;
+    }
+
+    .surface-dark :focus-visible {
+        outline-color: var(--color-marigold-400);
+    }
+
     @media (prefers-reduced-motion: reduce) {
         *,
         *::before,
@@ -54,5 +83,17 @@
             transition-duration: 0.01ms !important;
             scroll-behavior: auto !important;
         }
+    }
+}
+
+@layer components {
+    /* Label kecil berhuruf kapital, seperti penanda bab di buku */
+    .eyebrow {
+        @apply text-xs font-semibold tracking-[0.14em] text-ink-600 uppercase;
+    }
+
+    /* Link di dalam teks: selalu bergaris bawah supaya tidak hanya dibedakan lewat warna (WCAG 1.4.1) */
+    .link {
+        @apply font-medium text-ink-900 underline decoration-marigold-500 decoration-2 underline-offset-4 hover:decoration-ink-900;
     }
 }

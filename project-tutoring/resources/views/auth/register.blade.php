@@ -1,5 +1,5 @@
 <x-layouts.app title="Daftar">
-    <x-auth-card title="Buat akun EduLearn" subtitle="Gratis. Isian bertanda * wajib diisi.">
+    <x-auth-card title="Buat akun gratis" subtitle="Daftar sebagai Siswa untuk mengikuti kelas, atau sebagai Guru untuk menyusun kelasmu sendiri. Isian bertanda * wajib diisi.">
         <form method="POST" action="{{ route('register') }}" class="space-y-5" novalidate>
             @csrf
 
@@ -14,7 +14,7 @@
         </form>
 
         <x-slot:footer>
-            Sudah punya akun? <a href="{{ route('login') }}" class="font-semibold text-brand-700 hover:underline">Masuk</a>
+            Sudah punya akun? <a href="{{ route('login') }}" class="link">Masuk</a>
         </x-slot:footer>
     </x-auth-card>
 </x-layouts.app>

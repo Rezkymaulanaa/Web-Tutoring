@@ -1,16 +1,18 @@
 @props(['title', 'subtitle' => null])
 
-<div class="mx-auto flex max-w-md flex-col px-4 py-12 sm:py-16">
-    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-        <h1 class="text-2xl font-bold text-brand-950">{{ $title }}</h1>
+<div class="mx-auto grid max-w-5xl gap-12 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-12 lg:items-start">
+    <div class="lg:col-span-5 lg:pt-6">
+        <p class="eyebrow">EduLearn</p>
+        <h1 class="mt-3 font-display text-4xl leading-tight font-semibold tracking-tight text-ink-900">{{ $title }}</h1>
         @if ($subtitle)
-            <p class="mt-1 text-sm text-slate-600">{{ $subtitle }}</p>
+            <p class="mt-4 max-w-sm leading-7 text-ink-700">{{ $subtitle }}</p>
         @endif
-
-        <div class="mt-6">{{ $slot }}</div>
+        @isset($footer)
+            <p class="mt-6 text-sm text-ink-700">{{ $footer }}</p>
+        @endisset
     </div>
 
-    @isset($footer)
-        <p class="mt-6 text-center text-sm text-slate-600">{{ $footer }}</p>
-    @endisset
+    <div class="rounded-md border border-rule bg-paper-card p-6 sm:p-8 lg:col-span-7">
+        {{ $slot }}
+    </div>
 </div>

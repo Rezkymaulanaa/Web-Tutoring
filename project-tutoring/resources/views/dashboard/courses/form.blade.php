@@ -1,7 +1,7 @@
 {{-- Form bersama untuk tambah & edit course --}}
 @php($course ??= null)
 
-<p class="text-sm text-slate-600">Isian bertanda <span class="text-red-700">*</span> wajib diisi.</p>
+<p class="text-sm text-ink-600">Isian bertanda <span class="text-danger">*</span> wajib diisi.</p>
 
 <div class="grid gap-5 sm:grid-cols-2">
     <x-form.input name="course" label="Nama course" :value="$course?->course" required class="sm:col-span-2" />

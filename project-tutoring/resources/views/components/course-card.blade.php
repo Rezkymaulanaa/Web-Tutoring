@@ -1,44 +1,43 @@
 @props(['course', 'headingLevel' => 3])
 
 {{--
-    Seluruh kartu bisa diklik lewat link di judul (pseudo-element ::after menutupi kartu),
+    Kartu course bergaya kartu indeks perpustakaan: "punggung" berwarna di kiri (berbeda tiap course),
+    nomor kelas, judul serif. Seluruh kartu bisa diklik lewat link di judul (::after menutupi kartu),
     sehingga pembaca layar hanya mendengar satu link dengan nama course yang jelas.
 --}}
-<article class="group relative flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus-within:ring-3 focus-within:ring-brand-600">
-    <div class="flex h-28 items-end bg-gradient-to-br from-brand-700 to-brand-950 p-4">
-        <x-heroicon-o-book-open class="size-10 text-white/80" aria-hidden="true" />
-    </div>
+@php
+    $spines = ['bg-ink-900', 'bg-marigold-400', 'bg-[#2f7d6d]', 'bg-[#b5543c]', 'bg-sky', 'bg-[#6b5ca5]'];
+    $spine = $spines[$course->id % count($spines)];
+@endphp
 
-    <div class="flex flex-1 flex-col gap-3 p-5">
-        <p class="text-xs font-medium text-slate-600">
-            {{ $course->start_date->translatedFormat('j M Y') }} – {{ $course->end_date->translatedFormat('j M Y') }}
-        </p>
+<article class="group relative flex h-full flex-col rounded-md border border-rule bg-paper-card py-5 pr-5 pl-7 transition-colors hover:border-ink-300 focus-within:border-ink-900">
+    <span aria-hidden="true" class="{{ $spine }} absolute inset-y-0 left-0 w-2 rounded-l-md"></span>
 
-        <h{{ $headingLevel }} class="text-lg font-semibold text-slate-900">
-            <a href="{{ route('courses.show', $course) }}" class="after:absolute after:inset-0 focus:outline-none">
-                {{ $course->course }}
-            </a>
-        </h{{ $headingLevel }}>
+    <p class="eyebrow tabular">
+        <span class="sr-only">Periode: </span>{{ $course->start_date->translatedFormat('j M') }} – {{ $course->end_date->translatedFormat('j M Y') }}
+    </p>
 
-        <p class="line-clamp-3 text-sm leading-6 text-slate-600">{{ $course->deskripsi }}</p>
+    <h{{ $headingLevel }} class="mt-3 font-display text-2xl leading-tight font-semibold text-ink-900">
+        <a href="{{ route('courses.show', $course) }}" class="after:absolute after:inset-0 group-hover:underline decoration-marigold-400 decoration-2 underline-offset-4 focus:outline-none">
+            {{ $course->course }}
+        </a>
+    </h{{ $headingLevel }}>
 
-        <div class="mt-auto space-y-3 pt-2">
-            @if (auth()->user()?->isSiswa() && isset($course->contents_count))
-                <x-progress :value="$course->progress" :label="'Progres '.$course->course" />
-            @endif
+    <p class="mt-2 line-clamp-3 text-sm leading-6 text-ink-600">{{ $course->deskripsi }}</p>
 
-            <div class="flex items-center justify-between gap-2 text-sm text-slate-600">
-                <span class="flex items-center gap-2">
-                    <x-avatar :user="$course->user" size="sm" />
-                    <span><span class="sr-only">Pengajar: </span>{{ $course->user->nama }}</span>
-                </span>
-                @isset($course->contents_count)
-                    <span class="flex items-center gap-1">
-                        <x-heroicon-o-document-text class="size-4" aria-hidden="true" />
-                        {{ $course->contents_count }} materi
-                    </span>
-                @endisset
-            </div>
+    <div class="mt-auto pt-5">
+        @if (auth()->user()?->isSiswa() && isset($course->contents_count))
+            <x-progress :value="$course->progress" :label="'Progres '.$course->course" class="mb-4" />
+        @endif
+
+        <div class="flex items-center justify-between gap-2 border-t border-rule pt-4 text-sm text-ink-700">
+            <span class="flex min-w-0 items-center gap-2">
+                <x-avatar :user="$course->user" size="sm" />
+                <span class="truncate"><span class="sr-only">Pengajar: </span>{{ $course->user->nama }}</span>
+            </span>
+            @isset($course->contents_count)
+                <span class="tabular shrink-0 text-ink-600">{{ $course->contents_count }} materi</span>
+            @endisset
         </div>
     </div>
 </article>
