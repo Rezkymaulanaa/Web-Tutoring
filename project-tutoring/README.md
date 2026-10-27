@@ -28,7 +28,7 @@ Awalnya dibuat sebagai tugas Praktikum Pemrograman Web (semester 3, 2023), lalu 
 | Database | MySQL 8 (development & production), SQLite in-memory (test) |
 | Frontend | Blade components, Tailwind CSS 4, Vite 8, Heroicons |
 | Font | Fraunces & Public Sans, di-bundle lokal (tanpa CDN) |
-| Test | PHPUnit 12 (97 feature test) |
+| Test | PHPUnit 12 (102 feature test) |
 
 ## Menjalankan di komputer sendiri
 
@@ -54,6 +54,12 @@ php artisan db:seed
 # 4. Build aset & jalankan
 npm run build
 php artisan serve
+```
+
+Ingin langsung melihat aplikasi berisi data? Jalankan seeder demo untuk membuat 6 kelas (Matematika, Fisika, Biologi, Kimia, Bahasa Indonesia, Pemrograman Web) dengan 30 materi dan 10 video YouTube. Kelas dibagikan ke akun Guru yang ada, atau ke 3 akun Guru demo jika belum ada Guru sama sekali. Seeder ini aman dijalankan berulang.
+
+```bash
+php artisan db:seed --class=DemoContentSeeder
 ```
 
 Buka <http://localhost:8000> dan masuk dengan akun Admin dari `.env`. Jika `ADMIN_PASSWORD` dikosongkan, `db:seed` membuat password acak dan menampilkannya **sekali** di terminal.
