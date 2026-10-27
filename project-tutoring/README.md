@@ -28,7 +28,7 @@ Awalnya dibuat sebagai tugas Praktikum Pemrograman Web (semester 3, 2023), lalu 
 | Database | MySQL 8 (development & production), SQLite in-memory (test) |
 | Frontend | Blade components, Tailwind CSS 4, Vite 8, Heroicons |
 | Font | Fraunces & Public Sans, di-bundle lokal (tanpa CDN) |
-| Test | PHPUnit 12 (102 feature test) |
+| Test | PHPUnit 12 (108 feature test) |
 
 ## Menjalankan di komputer sendiri
 

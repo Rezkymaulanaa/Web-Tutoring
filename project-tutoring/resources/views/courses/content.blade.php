@@ -24,6 +24,20 @@
                     <p>{!! nl2br(e($content->content)) !!}</p>
                 </div>
 
+                @if ($isPreview && auth()->guest() && $course->contents->count() > 1)
+                    <aside aria-labelledby="cuplikan-heading" class="mt-10 border-l-4 border-marigold-400 bg-marigold-100 px-5 py-4">
+                        <h2 id="cuplikan-heading" class="font-display text-lg font-semibold text-ink-900">Kamu sedang membaca cuplikan gratis</h2>
+                        <p class="mt-1 text-sm leading-6 text-ink-800">
+                            Masuk atau daftar gratis untuk membuka {{ $course->contents->count() - 1 }} materi lainnya di kelas ini
+                            dan menyimpan progres belajarmu.
+                        </p>
+                        <div class="mt-4 flex flex-wrap gap-3">
+                            <x-button :href="route('register')" size="sm">Daftar gratis</x-button>
+                            <x-button :href="route('login')" variant="secondary" size="sm">Masuk</x-button>
+                        </div>
+                    </aside>
+                @endif
+
                 <nav aria-label="Navigasi materi" class="mt-12 grid gap-3 border-t border-ink-900 pt-6 sm:grid-cols-2">
                     @if ($previous)
                         <a href="{{ route('courses.contents.show', [$course, $previous]) }}" class="group rounded-md border border-rule bg-paper-card p-4 hover:border-ink-900">
@@ -39,7 +53,14 @@
 
                     @if ($next)
                         <a href="{{ route('courses.contents.show', [$course, $next]) }}" class="group rounded-md bg-ink-900 p-4 text-right text-paper hover:bg-ink-800 sm:col-start-2">
-                            <span class="flex items-center justify-end gap-1 text-xs font-semibold tracking-[0.14em] text-ink-300 uppercase">Berikutnya <x-heroicon-m-arrow-long-right class="size-4" aria-hidden="true" /></span>
+                            <span class="flex items-center justify-end gap-1 text-xs font-semibold tracking-[0.14em] text-ink-300 uppercase">
+                                @guest
+                                    <x-heroicon-s-lock-closed class="size-3.5" aria-hidden="true" /> Masuk untuk lanjut
+                                @else
+                                    Berikutnya
+                                @endguest
+                                <x-heroicon-m-arrow-long-right class="size-4" aria-hidden="true" />
+                            </span>
                             <span class="mt-1 block font-display text-lg font-semibold group-hover:underline">{{ $next->title }}</span>
                         </a>
                     @endif
@@ -62,9 +83,16 @@
                                     <span @class(['tabular w-6 shrink-0 font-display', 'text-marigold-500' => $current, 'text-ink-500' => ! $current]) aria-hidden="true">
                                         {{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}
                                     </span>
-                                    <span>{{ $item->title }}</span>
+                                    <span>
+                                        {{ $item->title }}
+                                        @if (auth()->guest() && ! $loop->first)
+                                            <span class="sr-only">(perlu masuk untuk membuka)</span>
+                                        @endif
+                                    </span>
                                     @if ($current)
                                         <span class="ml-auto shrink-0 text-xs font-medium text-ink-600">Sedang dibuka</span>
+                                    @elseif (auth()->guest() && ! $loop->first)
+                                        <x-heroicon-s-lock-closed class="ml-auto size-4 shrink-0 text-ink-500" aria-hidden="true" />
                                     @endif
                                 </a>
                             </li>

@@ -105,7 +105,8 @@ class UserInterfaceTest extends TestCase
         $course = Course::factory()->create();
         [$first, $second, $third] = Content::factory()->count(3)->for($course)->create(['user_id' => $course->user_id]);
 
-        $this->get(route('courses.contents.show', [$course, $second]))
+        $this->actingAs(User::factory()->siswa()->create())
+            ->get(route('courses.contents.show', [$course, $second]))
             ->assertOk()
             ->assertSee('Materi 2 dari 3')
             ->assertSee(route('courses.contents.show', [$course, $first]), false)

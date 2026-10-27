@@ -42,8 +42,16 @@
                     Materi akan muncul di sini setelah pengajar menambahkannya.
                 </x-empty-state>
             @else
+                @guest
+                    <p class="mt-3 text-sm text-ink-700">
+                        Materi pertama bisa dibuka gratis. <a href="{{ route('login') }}" class="link">Masuk</a> atau
+                        <a href="{{ route('register') }}" class="link">daftar gratis</a> untuk membuka semua materi dan menyimpan progres belajarmu.
+                    </p>
+                @endguest
+
                 <ol class="mt-5 border-t border-ink-900">
                     @foreach ($course->contents as $content)
+                        @php($locked = auth()->guest() && ! $loop->first)
                         <li class="group relative grid grid-cols-[3rem_1fr] gap-x-4 border-b border-rule py-5 sm:grid-cols-[4rem_1fr_auto]">
                             <span class="tabular font-display text-2xl font-semibold text-ink-300 group-hover:text-marigold-500" aria-hidden="true">
                                 {{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}
@@ -51,16 +59,27 @@
                             <div class="min-w-0">
                                 <h3 class="font-display text-xl font-semibold text-ink-900">
                                     <a href="{{ route('courses.contents.show', [$course, $content]) }}" class="after:absolute after:inset-0 group-hover:underline decoration-marigold-400 decoration-2 underline-offset-4">
-                                        {{ $content->title }}
+                                        {{ $content->title }}@if ($locked)<span class="sr-only"> (perlu masuk untuk membuka)</span>@endif
                                     </a>
                                 </h3>
                                 <p class="mt-1 line-clamp-2 text-sm leading-6 text-ink-600">{{ $content->content }}</p>
                             </div>
-                            @if ($content->youtube_embed_url)
-                                <span class="col-start-2 mt-2 inline-flex items-center gap-1.5 self-start text-xs font-semibold text-ink-700 sm:col-start-3 sm:mt-1">
-                                    <x-heroicon-s-play class="size-3.5" aria-hidden="true" /> Video
-                                </span>
-                            @endif
+                            <div class="col-start-2 mt-2 flex gap-3 self-start text-xs font-semibold sm:col-start-3 sm:mt-1 sm:flex-col sm:items-end sm:gap-1.5">
+                                @guest
+                                    @if ($loop->first)
+                                        <span class="rounded-sm bg-marigold-100 px-1.5 py-0.5 text-ink-900">Gratis</span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 text-ink-600" aria-hidden="true">
+                                            <x-heroicon-s-lock-closed class="size-3.5" /> Perlu masuk
+                                        </span>
+                                    @endif
+                                @endguest
+                                @if ($content->youtube_embed_url)
+                                    <span class="inline-flex items-center gap-1.5 text-ink-700">
+                                        <x-heroicon-s-play class="size-3.5" aria-hidden="true" /> Video
+                                    </span>
+                                @endif
+                            </div>
                         </li>
                     @endforeach
                 </ol>

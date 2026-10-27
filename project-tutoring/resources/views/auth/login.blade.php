@@ -2,6 +2,14 @@
     <x-auth-card title="Masuk ke akunmu" subtitle="Lanjutkan dari materi terakhir yang kamu buka. Progres belajarmu tersimpan otomatis.">
         <x-flash class="mb-6" />
 
+        {{-- Alasan diarahkan ke halaman login, misalnya saat membuka materi yang perlu masuk --}}
+        @if (session('status'))
+            <div role="status" class="mb-6 flex items-start gap-3 border-l-4 border-marigold-400 bg-marigold-100 px-4 py-3 text-sm text-ink-900">
+                <x-heroicon-s-lock-closed class="mt-0.5 size-5 shrink-0 text-ink-700" aria-hidden="true" />
+                {{ session('status') }}
+            </div>
+        @endif
+
         @if (session('loginError'))
             <div role="alert" class="mb-6 flex items-start gap-3 border-l-4 border-danger bg-danger-soft px-4 py-3 text-sm text-ink-900">
                 <x-heroicon-s-exclamation-triangle class="mt-0.5 size-5 shrink-0 text-danger" aria-hidden="true" />
